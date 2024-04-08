@@ -1,4 +1,3 @@
-import 'package:facemind/utils/global.colors.dart';
 import 'package:flutter/material.dart';
 
 class ButtonGlobal extends StatelessWidget {
@@ -7,11 +6,11 @@ class ButtonGlobal extends StatelessWidget {
   final VoidCallback onPressed;
 
   const ButtonGlobal({
-    Key? key,
+    super.key,
     required this.text,
     required this.buttonColor,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

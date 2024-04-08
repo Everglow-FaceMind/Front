@@ -1,12 +1,12 @@
 import 'package:facemind/utils/global.colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:facemind/view/signup.view.dart';
+import 'package:facemind/view/signup/signup.main.view.dart';
 import 'package:facemind/view/widgets/button.global.dart';
 import 'package:facemind/view/widgets/text.form.global.dart';
 
 class LoginView extends StatelessWidget {
-  LoginView({Key? key}) : super(key: key);
+  LoginView({super.key});
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -55,9 +55,7 @@ class LoginView extends StatelessWidget {
                 ButtonGlobal(
                   text: '로그인',
                   buttonColor: GlobalColors.darkgrayColor,
-                  onPressed: () {
-                    print('Login');
-                  },
+                  onPressed: () {},
                 ),
                 Container(
                   height: 50,
@@ -74,7 +72,7 @@ class LoginView extends StatelessWidget {
                         ),
                       ),
                       InkWell(
-                        child: Text(
+                        child: const Text(
                           ' 회원가입',
                           style: TextStyle(
                             color: Colors.black,

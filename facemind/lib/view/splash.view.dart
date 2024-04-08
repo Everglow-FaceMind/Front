@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:facemind/utils/global.colors.dart';
 
 class SplashView extends StatelessWidget {
-  const SplashView({Key? key}) : super(key: key);
+  const SplashView({super.key});
 
   @override
   Widget build(BuildContext context) {
