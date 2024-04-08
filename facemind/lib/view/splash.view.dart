@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:get/get.dart';
 import 'package:facemind/view/login.view.dart';
 import 'package:flutter/material.dart';
