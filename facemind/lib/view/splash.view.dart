@@ -14,7 +14,7 @@ class SplashView extends StatelessWidget {
       Get.to(LoginView());
     });
     return Scaffold(
-        backgroundColor: GlobalColors.mainColor,
+        backgroundColor: GlobalColors.whiteColor,
         body: const Center(
             child: Text('FaceMind',
                 style: TextStyle(
