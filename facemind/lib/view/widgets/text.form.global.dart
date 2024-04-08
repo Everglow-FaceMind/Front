@@ -1,3 +1,4 @@
+import 'package:facemind/utils/global.colors.dart';
 import 'package:flutter/material.dart';
 
 class TextFormGlobal extends StatelessWidget {
@@ -17,16 +18,21 @@ class TextFormGlobal extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 55,
-      padding: const EdgeInsets.only(top: 3, left: 15),
+      padding: const EdgeInsets.only(top: 2, left: 15),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(6),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-          ),
-        ],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          width: 1,
+          color: GlobalColors.lightgrayColor,
+        ),
+
+        //boxShadow: [
+        //  BoxShadow(
+        //    color: Colors.black.withOpacity(0.1),
+        //    blurRadius: 10,
+        //  ),
+        //],
       ),
       child: TextFormField(
         controller: controller,
