@@ -1,9 +1,11 @@
 import 'package:facemind/utils/global.colors.dart';
+import 'package:facemind/view/signup/get_email.dart';
 import 'package:facemind/view/widgets/button.global.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Agreement extends StatefulWidget {
-  const Agreement({Key? key}) : super(key: key);
+  const Agreement({super.key});
 
   @override
   State<Agreement> createState() => _AgreementState();
@@ -33,21 +35,17 @@ class _AgreementState extends State<Agreement> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            '페이스마인드에 오신 것을',
-            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-          ),
-          const Text(
-            '환영합니다.',
-            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 150),
+          const SizedBox(height: 120),
           ..._renderCheckList(),
           const Spacer(),
           ButtonGlobal(
             text: '다음',
-            buttonColor: _buttonActive ? GlobalColors.mainColor : Colors.grey,
-            onPressed: () {},
+            buttonColor: _buttonActive
+                ? GlobalColors.mainColor
+                : GlobalColors.darkgrayColor,
+            onPressed: () {
+              Get.to(() => GetEmail());
+            },
           ),
         ],
       ),
