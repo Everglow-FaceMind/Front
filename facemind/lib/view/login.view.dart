@@ -6,7 +6,7 @@ import 'package:facemind/view/widgets/button.global.dart';
 import 'package:facemind/view/widgets/text.form.global.dart';
 
 class LoginView extends StatelessWidget {
-  LoginView({super.key});
+  LoginView({Key? key}) : super(key: key);
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -44,7 +44,7 @@ class LoginView extends StatelessWidget {
                   obscure: false,
                   textInputType: TextInputType.emailAddress,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 TextFormGlobal(
                   controller: passwordController,
                   text: '비밀번호를 입력해 주세요.',

@@ -14,6 +14,9 @@ class GlobalColors {
   static HexColor lightgrayColor = HexColor('#CCCCCC');
 
   ///밝은회색
+  static HexColor lightlightgrayColor = HexColor('#CFCFCF');
+
+  ///더밝은회색
   static HexColor whiteColor = HexColor('#FFFFFF');
 
   ///배경, 글씨색,

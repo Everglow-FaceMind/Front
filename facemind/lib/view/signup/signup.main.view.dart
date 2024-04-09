@@ -1,15 +1,14 @@
 import 'package:facemind/utils/global.colors.dart';
 import 'package:facemind/view/widgets/agreement.dart';
+import 'package:facemind/view/widgets/circles.in.signup.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 
-///이렇게 하는 게 아닌 것 같음!!
-///코드가 더러움
-///바디 안에 있는 것만 바꾸면 될 것 같은데
-///페이지 넘버,
-
+///페이지를 이렇게 네 개를 만드는 게 나은지, state를 쓰는 게 나은지
+///
+///
 class SignupView extends StatelessWidget {
-  const SignupView({super.key});
+  const SignupView({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +26,7 @@ class SignupView extends StatelessWidget {
               color: GlobalColors.darkgrayColor,
               fontSize: 15,
               fontWeight: FontWeight.w500),
+          textAlign: TextAlign.left,
         ),
         backgroundColor: GlobalColors.whiteColor,
       ),
@@ -34,22 +34,47 @@ class SignupView extends StatelessWidget {
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.all(35.0),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Row(
+                children: [
+                  SignupCircle(
+                      text: '1',
+                      backgroundColor: GlobalColors.mainColor,
+                      textColor: Colors.white),
+                  SizedBox(width: 5),
+                  SignupCircle(
+                      text: '2',
+                      backgroundColor: GlobalColors.lightlightgrayColor,
+                      textColor: Colors.white),
+                  SizedBox(width: 5),
+                  SignupCircle(
+                      text: '3',
+                      backgroundColor: GlobalColors.lightlightgrayColor,
+                      textColor: Colors.white),
+                  SizedBox(width: 5),
+                  SignupCircle(
+                      text: '4',
+                      backgroundColor: GlobalColors.lightlightgrayColor,
+                      textColor: Colors.white),
+                ],
+
+                ///조건문으로 못바꿀까
+              ),
               SizedBox(height: 20),
               Text(
                 '페이스마인드에 오신 것을',
                 textAlign: TextAlign.left,
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w900),
               ),
               Text(
-                '환영합니다.',
+                '환영합니다!',
                 textAlign: TextAlign.left,
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w900),
               ),
               Expanded(
-                child: Agreement(), // MyApp 위젯을 SignupView 내에서 사용
+                child: Agreement(),
               ),
             ],
           ),

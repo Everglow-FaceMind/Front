@@ -1,6 +1,7 @@
 import 'package:facemind/utils/global.colors.dart';
 import 'package:facemind/view/signup/get_pw.dart';
 import 'package:facemind/view/widgets/button.global.dart';
+import 'package:facemind/view/widgets/circles.in.signup.dart';
 import 'package:facemind/view/widgets/text.form.global.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
@@ -36,7 +37,30 @@ class GetEmail extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    SignupCircle(
+                        text: '1',
+                        backgroundColor: GlobalColors.mainColor,
+                        textColor: Colors.white),
+                    SizedBox(width: 5),
+                    SignupCircle(
+                        text: '2',
+                        backgroundColor: GlobalColors.mainColor,
+                        textColor: Colors.white),
+                    SizedBox(width: 5),
+                    SignupCircle(
+                        text: '3',
+                        backgroundColor: GlobalColors.lightlightgrayColor,
+                        textColor: Colors.white),
+                    SizedBox(width: 5),
+                    SignupCircle(
+                        text: '4',
+                        backgroundColor: GlobalColors.lightlightgrayColor,
+                        textColor: Colors.white),
+                  ],
+                ),
+                SizedBox(height: 20),
                 const Text(
                   '이메일을 입력해주세요.',
                   textAlign: TextAlign.left,
@@ -56,7 +80,8 @@ class GetEmail extends StatelessWidget {
                 ButtonGlobal(
                   text: '다음',
                   onPressed: () {
-                    String email = emailController.text; //이메일 유효성 검사??
+                    String email = emailController.text; //이메일 유효성 검사 해야 함
+                    print("email: ${emailController.text}");
                     Get.to(() => GetPassword());
                   },
                   buttonColor: GlobalColors.darkgrayColor,

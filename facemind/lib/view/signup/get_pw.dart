@@ -1,12 +1,13 @@
 import 'package:facemind/utils/global.colors.dart';
 import 'package:facemind/view/signup/get_profile.dart';
 import 'package:facemind/view/widgets/button.global.dart';
+import 'package:facemind/view/widgets/circles.in.signup.dart';
 import 'package:facemind/view/widgets/text.form.global.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 
 class GetPassword extends StatelessWidget {
-  GetPassword({Key? key}) : super(key: key);
+  GetPassword({super.key});
 
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
@@ -37,7 +38,32 @@ class GetPassword extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    SignupCircle(
+                        text: '1',
+                        backgroundColor: GlobalColors.mainColor,
+                        textColor: Colors.white),
+                    SizedBox(width: 5),
+                    SignupCircle(
+                        text: '2',
+                        backgroundColor: GlobalColors.mainColor,
+                        textColor: Colors.white),
+                    SizedBox(width: 5),
+                    SignupCircle(
+                        text: '3',
+                        backgroundColor: GlobalColors.mainColor,
+                        textColor: Colors.white),
+                    SizedBox(width: 5),
+                    SignupCircle(
+                        text: '4',
+                        backgroundColor: GlobalColors.lightlightgrayColor,
+                        textColor: Colors.white),
+                  ],
+
+                  ///조건문으로 못바꿀까
+                ),
+                SizedBox(height: 20),
                 const Text(
                   '사용하실 비밀번호를',
                   textAlign: TextAlign.left,
