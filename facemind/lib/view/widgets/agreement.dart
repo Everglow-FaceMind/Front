@@ -44,7 +44,9 @@ class _AgreementState extends State<Agreement> {
                 ? GlobalColors.mainColor
                 : GlobalColors.darkgrayColor,
             onPressed: () {
-              Get.to(() => GetEmail());
+              if (_buttonActive) {
+                Get.to(() => GetEmail());
+              }
             },
           ),
         ],
