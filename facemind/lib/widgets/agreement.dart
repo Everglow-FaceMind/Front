@@ -1,11 +1,14 @@
-import 'package:facemind/utils/global.colors.dart';
-import 'package:facemind/view/signup/get_email.dart';
-import 'package:facemind/view/widgets/button.global.dart';
+import 'package:facemind/utils/global_colors.dart';
+import 'package:facemind/widgets/button_global.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class Agreement extends StatefulWidget {
-  const Agreement({super.key});
+  final VoidCallback onNext;
+
+  const Agreement({
+    super.key,
+    required this.onNext,
+  });
 
   @override
   State<Agreement> createState() => _AgreementState();
@@ -13,7 +16,6 @@ class Agreement extends StatefulWidget {
 
 class _AgreementState extends State<Agreement> {
   List<bool> _isChecked = List.generate(4, (_) => false);
-
   bool get _buttonActive => _isChecked[1] && _isChecked[2];
 
   void _updateCheckState(int index) {
@@ -45,7 +47,7 @@ class _AgreementState extends State<Agreement> {
                 : GlobalColors.darkgrayColor,
             onPressed: () {
               if (_buttonActive) {
-                Get.to(() => GetEmail());
+                widget.onNext();
               }
             },
           ),
@@ -58,7 +60,7 @@ class _AgreementState extends State<Agreement> {
     List<String> labels = [
       '약관 전체동의',
       '이용약관 동의 (필수)',
-      '개인정보 수집 및 이용동의(필수)',
+      '개인정보 수집 및 이용동의 (필수)',
       'E-mail 및 SMS 광고성 정보 수신동의 (선택)',
     ];
 

@@ -7,6 +7,7 @@ void main() {
 }
 
 class App extends StatelessWidget {
+  // https://pub.dev/packages/flutter_native_splash
   const App({Key? key}) : super(key: key);
 
   @override

@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:get/get.dart';
-import 'package:facemind/view/login.view.dart';
+import 'package:facemind/view/login/login_view.dart';
 import 'package:flutter/material.dart';
-import 'package:facemind/utils/global.colors.dart';
+import 'package:facemind/utils/global_colors.dart';
 
 class SplashView extends StatelessWidget {
   const SplashView({super.key});
