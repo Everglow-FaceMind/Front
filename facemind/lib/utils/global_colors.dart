@@ -6,6 +6,7 @@ class GlobalColors {
   //// sub bg color : FCF9F6
   //// dark gray color : 969696
   static HexColor mainColor = HexColor('#A6CA50');
+  static HexColor lightgreenColor = HexColor('#D5E63E');
 
   ///초록이
   static HexColor darkgrayColor = HexColor('#969696');
