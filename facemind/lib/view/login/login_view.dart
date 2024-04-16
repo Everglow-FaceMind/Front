@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import 'package:facemind/view/signup/signup_view.dart';
 import 'package:facemind/widgets/button_global.dart';
 
+import '../../model/user.dart';
 import '../../utils/string_extension.dart';
+import '../../utils/user_store.dart';
 import '../home/home_view.dart';
 import '../../widgets/login_text_form.dart';
 
@@ -15,13 +17,16 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  /// GetX에서 전역으로 UserStore 접근을 하기 위해 사용하는 코드
+  late final UserStore _userStore = Get.find();
 
   @override
   void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -54,7 +59,7 @@ class _LoginViewState extends State<LoginView> {
                   width: 150,
                 ),
                 LoginTextFrom(
-                  controller: emailController,
+                  controller: _emailController,
                   hintText: '이메일을 입력해 주세요.',
                   textInputType: TextInputType.emailAddress,
                   validator: (value) {
@@ -62,33 +67,30 @@ class _LoginViewState extends State<LoginView> {
                     final text = value.toString();
                     return text.emailValidat;
                   },
+                  onChanged: (p0) {
+                    setState(() {});
+                  },
                 ),
                 const SizedBox(height: 20),
                 LoginTextFrom(
-                  controller: passwordController,
+                  controller: _passwordController,
                   hintText: '비밀번호를 입력해 주세요.',
                   validator: (value) {
                     if (value == null) return null;
                     final text = value.toString();
                     return text.passwordValidat;
                   },
+                  onChanged: (p0) {
+                    setState(() {});
+                  },
                 ),
                 const SizedBox(height: 30),
                 ButtonGlobal(
                   text: '로그인',
-                  buttonColor: GlobalColors.darkgrayColor,
-                  onPressed: () {
-                    if (passwordController.text == '1234') {
-                      Get.offAll(() => const HomeView());
-                    } else {
-                      Get.snackbar(
-                        '로그인 실패',
-                        '비밀번호가 틀렸습니다.',
-                        backgroundColor: GlobalColors.darkgrayColor,
-                        colorText: GlobalColors.whiteColor,
-                      );
-                    }
-                  },
+                  buttonColor: _isInputValid
+                      ? GlobalColors.mainColor
+                      : GlobalColors.darkgrayColor,
+                  onPressed: _isInputValid ? _login : null,
                 ),
                 Container(
                   height: 50,
@@ -104,9 +106,10 @@ class _LoginViewState extends State<LoginView> {
                           fontSize: 11,
                         ),
                       ),
+                      const SizedBox(width: 4),
                       InkWell(
                         child: const Text(
-                          ' 회원가입',
+                          '회원가입',
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 12,
@@ -126,6 +129,33 @@ class _LoginViewState extends State<LoginView> {
       ),
     );
   }
+
+  /// 로그인 동작
+  void _login() {
+    /// 비밀번호가 1234일 경우 홈 화면으로 이동 (임시)
+    if (_passwordController.text == '12345') {
+      final email = _emailController.text;
+      // 이메일에서 @ 앞부분을 닉네임으로 사용
+      final nickname = email.split('@').first;
+
+      // 유저 정보 업데이트
+      _userStore.updateUser(User(email: email, name: nickname, bio: ''));
+
+      Get.offAll(() => const HomeView());
+    } else {
+      Get.snackbar(
+        '로그인 실패',
+        '비밀번호가 틀렸습니다.',
+        backgroundColor: GlobalColors.darkgrayColor,
+        colorText: GlobalColors.whiteColor,
+      );
+    }
+  }
+
+  /// 입력한 이메일과 비밀번호가 유효한지 확인
+  bool get _isInputValid =>
+      _emailController.text.emailValidat == null &&
+      _passwordController.text.passwordValidat == null;
 }
 
 class ExampleView extends StatefulWidget {
@@ -141,8 +171,6 @@ class ExampleView extends StatefulWidget {
 class _ExampleViewState extends State<ExampleView> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text(widget.text),
-    );
+    return Text(widget.text);
   }
 }

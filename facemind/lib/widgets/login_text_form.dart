@@ -44,6 +44,7 @@ class _LoginTextFromState extends State<LoginTextFrom> {
         validator: widget.validator,
         maxLength: widget.maxLength,
         onChanged: (value) {
+          // 입력한 Text가 변경될 때 호출되는 함수
           widget.onChanged?.call(value);
           setState(() {});
         },
@@ -65,6 +66,7 @@ class _LoginTextFromState extends State<LoginTextFrom> {
     );
   }
 
+  /// TextField에 입력된 글자 수를 표시하는 텍스트
   String get _maxSuffixText =>
       '${widget.controller.text.length.toString()}/${widget.maxLength.toString()}';
 }

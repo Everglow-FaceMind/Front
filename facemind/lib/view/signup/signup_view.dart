@@ -1,8 +1,11 @@
+import 'package:facemind/model/user.dart';
 import 'package:facemind/utils/global_colors.dart';
 import 'package:facemind/utils/string_extension.dart';
+import 'package:facemind/utils/user_store.dart';
 import 'package:facemind/widgets/agreement.dart';
 import 'package:facemind/widgets/circles_in_signup.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 
 import '../home/home_view.dart';
@@ -17,6 +20,8 @@ class SignupView extends StatefulWidget {
 }
 
 class _SignupViewState extends State<SignupView> {
+  final UserStore _userStore = Get.find();
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -51,17 +56,7 @@ class _SignupViewState extends State<SignupView> {
       backgroundColor: GlobalColors.whiteColor,
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () {
-            if (_tabIndex > 0) {
-              _pageController.animateToPage(
-                _tabIndex - 1,
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeIn,
-              );
-            } else {
-              Get.back();
-            }
-          },
+          onPressed: _back,
           icon: const Icon(Icons.chevron_left, size: 20),
           color: GlobalColors.darkgrayColor,
         ),
@@ -82,24 +77,7 @@ class _SignupViewState extends State<SignupView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: List.generate(
-                  4,
-                  (index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 5.0),
-                      child: SignupCircle(
-                        text: (index + 1).toString(),
-                        backgroundColor: _tabIndex == index
-                            ? GlobalColors.mainColor
-                            : GlobalColors
-                                .lightlightgrayColor, // 조건문 ? 참일때 : 거짓을때
-                        textColor: Colors.white,
-                      ),
-                    );
-                  },
-                ),
-              ),
+              _pageNumberView(),
               const SizedBox(height: 20),
               Expanded(
                 child: PageView(
@@ -110,10 +88,10 @@ class _SignupViewState extends State<SignupView> {
                   },
                   controller: _pageController,
                   children: [
-                    agreementView(),
-                    emailView(),
-                    passwordView(),
-                    nicknameView(),
+                    _agreementView(),
+                    _emailView(),
+                    _passwordView(),
+                    _nicknameView(),
                   ],
                 ),
               ),
@@ -124,7 +102,28 @@ class _SignupViewState extends State<SignupView> {
     );
   }
 
-  Widget agreementView() {
+  Widget _pageNumberView() {
+    return Row(
+      children: List.generate(
+        4,
+        (index) {
+          return Padding(
+            padding: const EdgeInsets.only(right: 5.0),
+            child: SignupCircle(
+              text: (index + 1).toString(),
+              backgroundColor: _tabIndex == index
+                  ? GlobalColors.mainColor
+                  : GlobalColors.lightlightgrayColor,
+              textColor: Colors.white,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  /// 권한 동의 화면
+  Widget _agreementView() {
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,7 +155,8 @@ class _SignupViewState extends State<SignupView> {
     );
   }
 
-  Widget emailView() {
+  /// 이메일 입력 화면
+  Widget _emailView() {
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,7 +209,8 @@ class _SignupViewState extends State<SignupView> {
     );
   }
 
-  Widget passwordView() {
+  /// 비밀번호 입력 화면
+  Widget _passwordView() {
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -311,7 +312,8 @@ class _SignupViewState extends State<SignupView> {
     );
   }
 
-  Widget nicknameView() {
+  /// 닉네임 입력 화면
+  Widget _nicknameView() {
     return Center(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,6 +387,13 @@ class _SignupViewState extends State<SignupView> {
                 Get.snackbar('닉네임 입력', '닉네임을 입력해주세요');
                 return;
               } else {
+                _userStore.updateUser(
+                  User(
+                    email: _email,
+                    name: _nickname,
+                    bio: _bioName,
+                  ),
+                );
                 Get.offAll(() => const HomeView());
               }
             },
@@ -395,5 +404,19 @@ class _SignupViewState extends State<SignupView> {
         ],
       ),
     );
+  }
+
+  /// 뒤로가기
+  void _back() {
+    // 페이지가 0보다 크면 이전 페이지로 이동
+    if (_tabIndex > 0) {
+      _pageController.animateToPage(
+        _tabIndex - 1,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeIn,
+      );
+    } else {
+      Get.back();
+    }
   }
 }

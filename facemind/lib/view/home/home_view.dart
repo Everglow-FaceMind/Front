@@ -1,103 +1,96 @@
-import 'package:facemind/utils/global_colors.dart';
-import 'package:facemind/widgets/bottom_bar.dart';
-// import 'package:facemind/widgets/dropdown.dart';
+import 'package:facemind/view/home/analyze_view.dart';
+import 'package:facemind/view/home/calendar_view.dart';
+import 'package:facemind/view/home/my_page_view.dart';
 import 'package:flutter/material.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:facemind/utils/global_colors.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 
 class HomeView extends StatefulWidget {
-  const HomeView({
-    super.key,
-  });
+  const HomeView({super.key});
+
   @override
   State<StatefulWidget> createState() => _HomeViewState();
 }
 
 class _HomeViewState extends State<HomeView> {
-  DateTime today = DateTime.now();
-  void _onDaySelected(DateTime day, DateTime focusedDay) {
-    setState(() {
-      today = day;
-    });
-  }
+  final PageController _pageController = PageController(initialPage: 1);
+  int _selectedIndex = 1;
 
-  late TabController controller;
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: DefaultTabController(
-            length: 3,
-            initialIndex: 1, //홈을 기본으로
-            child: Scaffold(
-              backgroundColor: GlobalColors.whiteColor,
-              body: TabBarView(
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  //통계
-                  Container(),
+    return DefaultTabController(
+      length: 3,
 
-                  // 캘린더 홈
-                  Container(
-                    padding: const EdgeInsets.all(35.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 40),
-                        const Text(
-                          'name 님',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              fontSize: 18.0, fontWeight: FontWeight.w800),
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          '오늘 날짜를 클릭하고',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              fontSize: 18.0, fontWeight: FontWeight.w300),
-                        ),
-                        const SizedBox(height: 5),
-                        const Text(
-                          '심박수를 측정해보세요',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              fontSize: 18.0, fontWeight: FontWeight.w300),
-                        ),
-                        const SizedBox(height: 30),
-                        // const Dropdown(),
-                        Container(
-                          color: GlobalColors.subBgColor,
-                          child: TableCalendar(
-                            rowHeight: 45,
-                            headerStyle: const HeaderStyle(
-                                formatButtonVisible: false,
-                                titleCentered: true),
-                            // calendarStyle: CalendarStyle(
-                            //   defaultTextStyle: TextStyle(fontSize: 10.0),
-                            // ),
-                            calendarStyle: CalendarStyle(
-                                selectedDecoration: BoxDecoration(
-                              color: GlobalColors.lightgreenColor,
-                              shape: BoxShape.circle,
-                            )),
-                            //오늘 날짜 색은 mainColor
-                            availableGestures: AvailableGestures.all,
-                            selectedDayPredicate: (day) =>
-                                isSameDay(day, today),
-                            focusedDay: today,
-                            firstDay: DateTime.utc(2024),
-                            lastDay: DateTime.utc(2030),
-                            onDaySelected: _onDaySelected,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  //마이페이지
-                  Container(),
-                ],
-              ),
-              bottomNavigationBar: Bottom(),
-            )));
+      initialIndex: 1, //홈을 기본으로
+      child: Scaffold(
+        backgroundColor: GlobalColors.whiteColor,
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: (value) {
+            // 페이지가 변경될 때 호출되는 함수
+            setState(() {
+              _selectedIndex = value;
+            });
+          },
+          physics: const NeverScrollableScrollPhysics(),
+          children: const [
+            //통계
+            AnalyzeView(),
+            // 캘린더 홈
+            CalendarView(),
+            //마이페이지
+            MyPageView(),
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart),
+              label: '통계',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today),
+              label: '캘린더',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: '마이',
+            ),
+          ],
+          selectedItemColor: GlobalColors.mainColor, // 선택된 아이템 색상
+          unselectedItemColor: GlobalColors.darkgrayColor, // 선택되지 않은 아이템 색상
+          backgroundColor: GlobalColors.whiteColor, // 배경색
+          // 선택된 아이템의 라벨 스타일
+          selectedLabelStyle: TextStyle(
+            fontSize: 9,
+            color: GlobalColors.mainColor,
+          ),
+          // 선택되지 않은 아이템의 라벨 스타일
+          unselectedLabelStyle: TextStyle(
+            fontSize: 9,
+            color: GlobalColors.darkgrayColor,
+          ),
+          currentIndex: _selectedIndex,
+
+          elevation: 10,
+          onTap: (value) {
+            setState(() {
+              _selectedIndex = value;
+              _pageController.animateToPage(
+                _selectedIndex,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeIn,
+              );
+            });
+          },
+        ),
+      ),
+    );
   }
 }
