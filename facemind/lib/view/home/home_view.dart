@@ -3,7 +3,6 @@ import 'package:facemind/view/home/calendar_view.dart';
 import 'package:facemind/view/home/my_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:facemind/utils/global_colors.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});

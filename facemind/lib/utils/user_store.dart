@@ -10,7 +10,7 @@ class UserStore {
   bool get isLogin => currentUser != null;
 
   /// 사용자 정보 업데이트
-  void updateUser(User user) {
+  void updateUser(User? user) {
     currentUser = user;
   }
 }

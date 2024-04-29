@@ -6,7 +6,6 @@ import 'package:facemind/widgets/agreement.dart';
 import 'package:facemind/widgets/circles_in_signup.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/route_manager.dart';
 
 import '../home/home_view.dart';
 import '../../widgets/button_global.dart';

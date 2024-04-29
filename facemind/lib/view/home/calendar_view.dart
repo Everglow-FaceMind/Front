@@ -1,5 +1,6 @@
 import 'package:facemind/model/user_condition.dart';
 import 'package:facemind/utils/user_store.dart';
+import 'package:facemind/view/diary/diary_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +12,8 @@ import '../../widgets/dropdown.dart';
 import 'camera_view.dart';
 
 class CalendarView extends StatefulWidget {
-  const CalendarView({super.key});
+  final String name;
+  const CalendarView({super.key, this.name = ''});
   @override
   State<StatefulWidget> createState() => _CalendarViewState();
 }
@@ -31,6 +33,11 @@ class _CalendarViewState extends State<CalendarView> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 35),
@@ -45,10 +52,7 @@ class _CalendarViewState extends State<CalendarView> {
           onPressed: () {
             Get.to(() => const CameraView());
           },
-          // 선택된 날짜가 없으면 버튼 색상을 회색으로 변경
-          buttonColor: selectedDay == null
-              ? GlobalColors.darkgrayColor
-              : GlobalColors.mainColor,
+          buttonColor: GlobalColors.mainColor,
         ),
         const Spacer(),
       ]),
@@ -111,8 +115,7 @@ class _CalendarViewState extends State<CalendarView> {
               defaultBuilder: (context, day, focusedDay) => _dayCell(day),
               outsideBuilder: (context, day, focusedDay) =>
                   _outsideDayCell(day),
-              selectedBuilder: (context, day, focusedDay) =>
-                  _selectedDayCell(day),
+              selectedBuilder: (context, day, focusedDay) => _dayCell(day),
               // 오늘 날짜 표시
               todayBuilder: (context, day, focusedDay) => _todayCell(day),
               markerBuilder: (context, day, events) => _markerCell(day),
@@ -274,5 +277,6 @@ class _CalendarViewState extends State<CalendarView> {
     setState(() {
       selectedDay = day;
     });
+    Get.to(() => DiaryView(date: day));
   }
 }

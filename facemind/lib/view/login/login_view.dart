@@ -132,24 +132,34 @@ class _LoginViewState extends State<LoginView> {
 
   /// 로그인 동작
   void _login() {
-    /// 비밀번호가 1234일 경우 홈 화면으로 이동 (임시)
-    if (_passwordController.text == '12345') {
-      final email = _emailController.text;
-      // 이메일에서 @ 앞부분을 닉네임으로 사용
-      final nickname = email.split('@').first;
+    _requestLogin().then((value) {
+      if (value) {
+        final email = _emailController.text;
+        // 이메일에서 @ 앞부분을 닉네임으로 사용
+        final nickname = email.split('@').first;
 
-      // 유저 정보 업데이트
-      _userStore.updateUser(User(email: email, name: nickname, bio: ''));
+        // 유저 정보 업데이트
+        _userStore.updateUser(User(email: email, name: nickname, bio: ''));
 
-      Get.offAll(() => const HomeView());
-    } else {
-      Get.snackbar(
-        '로그인 실패',
-        '비밀번호가 틀렸습니다.',
-        backgroundColor: GlobalColors.darkgrayColor,
-        colorText: GlobalColors.whiteColor,
-      );
-    }
+        Get.offAll(() => const HomeView());
+      } else {
+        Get.snackbar(
+          '로그인 실패',
+          '비밀번호가 틀렸습니다.',
+          backgroundColor: GlobalColors.darkgrayColor,
+          colorText: GlobalColors.whiteColor,
+        );
+      }
+    });
+  }
+
+  Future<bool> _requestLogin() async {
+    final email = _emailController.text;
+    final password = _passwordController.text;
+
+    // dio, http 패키지를 사용하여 로그인 요청을 보내고 응답을 받음
+
+    return true;
   }
 
   /// 입력한 이메일과 비밀번호가 유효한지 확인
