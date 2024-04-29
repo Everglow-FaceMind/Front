@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class DiaryView extends StatefulWidget {
+class NewDiaryView extends StatefulWidget {
   // 페이지에 표시할 날짜 정보
   final DateTime date;
 
-  const DiaryView({
+  const NewDiaryView({
     super.key,
     required this.date,
   });
   @override
-  State<DiaryView> createState() => _DiaryViewState();
+  State<NewDiaryView> createState() => _NewDiaryViewState();
 }
 
-class _DiaryViewState extends State<DiaryView> {
+class _NewDiaryViewState extends State<NewDiaryView> {
   DateTime date = DateTime.now();
 
   @override
@@ -41,7 +41,7 @@ class _DiaryViewState extends State<DiaryView> {
             Container(
               padding: const EdgeInsets.only(left: 15),
               child: Text(
-                '내 일기',
+                '일기 작성',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 18,
@@ -58,7 +58,8 @@ class _DiaryViewState extends State<DiaryView> {
             SizedBox(height: 10),
 
             //날짜 표시
-            _displayDate,
+
+            Stack(_displayStat, _displayDate),
 
             // 일기 내용 여기에
           ],
@@ -67,54 +68,21 @@ class _DiaryViewState extends State<DiaryView> {
     );
   }
 
+  Widget get _displayStat {}
   Widget get _displayDate {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
           '${widget.date.year}',
-          style: Theme.of(context).textTheme.labelMedium?.apply(
+          style: Theme.of(context).textTheme.labelSmall?.apply(
                 color: GlobalColors.mainColor,
               ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Spacer(),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  date = date.subtract(const Duration(days: 1));
-                });
-              },
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                size: 16,
-              ),
-            ),
-            SizedBox(
-              width: 200,
-              child: Center(
-                child: Text(
-                  '${widget.date.month}월 ${widget.date.day}일, ${DateFormat('E', 'ko_KR').format(widget.date)}요일',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  date = date.add(const Duration(days: 1));
-                });
-              },
-              icon: const Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-              ),
-            ),
-            const Spacer(),
-          ],
+        Text(
+          '${widget.date.month}월 ${widget.date.day}일, ${DateFormat('E', 'ko_KR').format(widget.date)}요일',
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ],
     );
