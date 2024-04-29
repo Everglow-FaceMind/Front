@@ -1,4 +1,4 @@
-import 'package:camera/camera.dart';
+// import 'package:camera/camera.dart';
 import 'package:facemind/utils/user_store.dart';
 import 'package:facemind/view/splash.view.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-late List<CameraDescription> _cameras;
+// late List<CameraDescription> _cameras;
 Future<void> main() async {
   /// 한국어 포맷
   await initializeDateFormatting('ko_KR');
@@ -15,8 +15,8 @@ Future<void> main() async {
   Get.lazyPut(() => UserStore(), fenix: true);
 
   //카메라
-  WidgetsFlutterBinding.ensureInitialized();
-  _cameras = await availableCameras();
+  // WidgetsFlutterBinding.ensureInitialized();
+  // _cameras = await availableCameras();
 
   runApp(const App());
 }

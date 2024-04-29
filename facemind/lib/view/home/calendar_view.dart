@@ -50,7 +50,7 @@ class _CalendarViewState extends State<CalendarView> {
         ButtonGlobal(
           text: '심박수 측정하기',
           onPressed: () {
-            Get.to(() => const CameraView());
+            // Get.to(() => const CameraView());
           },
           buttonColor: GlobalColors.mainColor,
         ),
