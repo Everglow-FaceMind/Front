@@ -44,11 +44,7 @@ class _HomeViewState extends State<HomeView> {
             // 캘린더 홈
             CalendarView(),
             //마이페이지
-            MyPageView(
-              name: '',
-              email: '',
-              bio: '',
-            ),
+            MyPageView(),
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(

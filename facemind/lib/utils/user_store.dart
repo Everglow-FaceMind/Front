@@ -1,10 +1,14 @@
+import 'package:flutter/material.dart';
+
 import '../model/user.dart';
 
 /// 사용자 정보를 저장하는 클래스
 class UserStore {
   // 현재 사용자 정보
   User? currentUser;
-  UserStore({this.currentUser});
+  UserStore({this.currentUser}) {
+    debugPrint('UserStore 생성자');
+  }
 
   /// 로그인 여부 확인 (currentUser가 null이면 로그아웃 상태)
   bool get isLogin => currentUser != null;

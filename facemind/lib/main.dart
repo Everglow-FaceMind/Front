@@ -12,8 +12,8 @@ Future<void> main() async {
   await initializeDateFormatting('ko_KR');
 
   /// GetX에서 전역으로 UserStore 접근
-  Get.lazyPut(() => UserStore(), fenix: true);
-
+  final UserStore userStore = UserStore();
+  Get.lazyPut(() => userStore, fenix: true);
   //카메라
   // WidgetsFlutterBinding.ensureInitialized();
   // _cameras = await availableCameras();

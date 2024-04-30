@@ -4,15 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class MyPageView extends StatefulWidget {
-  final String name;
-  final String email;
-  final String bio;
-  const MyPageView(
-      {super.key, required this.name, required this.email, required this.bio});
+  const MyPageView({super.key});
+  @override
   State<MyPageView> createState() => _MyPageViewState();
 }
 
 class _MyPageViewState extends State<MyPageView> {
+  late final UserStore _userStore = Get.find();
+
   @override
   Widget build(BuildContext context) {
     late final UserStore _userStore = Get.find();
@@ -28,7 +27,7 @@ class _MyPageViewState extends State<MyPageView> {
                     children: [
                       Container(
                         padding: const EdgeInsets.only(left: 5),
-                        child: Text(
+                        child: const Text(
                           'MY',
                           style: TextStyle(
                             color: Colors.black,
@@ -43,7 +42,7 @@ class _MyPageViewState extends State<MyPageView> {
                         color: Colors.grey[500],
                         thickness: 1,
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
                       //사용자 이름
                       Container(
