@@ -16,6 +16,7 @@ Future<void> main() async {
   /// GetX에서 전역으로 UserStore 접근
   final UserStore userStore = UserStore();
   Get.lazyPut(() => userStore, fenix: true);
+
   // 카메라
   WidgetsFlutterBinding.ensureInitialized();
   _cameras = await availableCameras();
@@ -25,6 +26,7 @@ Future<void> main() async {
 
 class App extends StatelessWidget {
   const App({super.key});
+
   @override
   Widget build(BuildContext context) {
     return const GetMaterialApp(
