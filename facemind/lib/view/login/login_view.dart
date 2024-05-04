@@ -1,4 +1,5 @@
 import 'package:facemind/utils/global_colors.dart';
+import 'package:facemind/view/home/camera_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:facemind/view/signup/signup_view.dart';
@@ -9,6 +10,11 @@ import '../../utils/string_extension.dart';
 import '../../utils/user_store.dart';
 import '../home/home_view.dart';
 import '../../widgets/login_text_form.dart';
+
+class Assets {
+  static String Logo = 'assets/Images/logo.png';
+  static String Logo2 = 'assets/Images/logo2.png';
+}
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -40,16 +46,21 @@ class _LoginViewState extends State<LoginView> {
             width: double.infinity,
             padding: const EdgeInsets.all(35.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 80),
+                Image.asset(
+                  width: 150,
+                  Assets.Logo2,
+                ),
+                const SizedBox(height: 30),
                 Container(
                   alignment: Alignment.center,
                   child: const Text(
-                    '(로고자리)페이스마인드',
+                    '페이스마인드',
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 25,
+                      fontSize: 30,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

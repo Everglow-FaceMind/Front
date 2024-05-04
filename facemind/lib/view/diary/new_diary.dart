@@ -97,7 +97,7 @@ class _NewDiaryViewState extends State<NewDiaryView> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  '엔터를 사용해서 등록할 수 있습니다. (최대 3개)\n등록한 값을 터치하면 삭제됩니다.',
+                  '빈칸을 클릭하여 감정을 등록하세요. (최대 3개)\n등록한 값을 터치하면 삭제됩니다.',
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     color: GlobalColors.darkyellow,
@@ -142,7 +142,7 @@ class _NewDiaryViewState extends State<NewDiaryView> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  '엔터를 사용해서 등록할 수 있습니다. (최대 3개)\n등록한 값을 터치하면 삭제됩니다.',
+                  '빈칸을 클릭하여 감정을 등록하세요. (최대 3개)\n등록한 값을 터치하면 삭제됩니다.',
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     color: GlobalColors.darkyellow,

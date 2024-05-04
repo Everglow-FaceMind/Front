@@ -26,42 +26,41 @@ class _CameraViewState extends State<CameraView> {
 
   // index: 0 => 후면
   // index: 1 => 전면
-  late List<CameraDescription> _cameras;
+  late List<CameraDescription> _cameras = [];
   late CameraController controller;
 
   @override
   void initState() {
     super.initState();
-    // 카메라 컨트롤러 초기화
-    controller =
-        CameraController(_cameras[0], ResolutionPreset.max, enableAudio: false);
+    _initializeCamera();
+  }
 
-    controller.initialize().then((_) {
-      // 카메라가 작동되지 않을 경우
+  void _initializeCamera() async {
+    // 사용 가능한 카메라 가져오기
+    final cameras = await availableCameras();
 
-      // 화면이 아직 있는지 확인
-      if (!mounted) {
-        return;
-      }
-      // 카메라가 작동될 경우
-      setState(() {
-        // 코드 작성
-      });
-    })
-        // 카메라 오류 시
-        .catchError((Object e) {
-      if (e is CameraException) {
-        switch (e.code) {
-          case 'CameraAccessDenied':
-            print("CameraController Error : CameraAccessDenied");
-            // Handle access errors here.
-            break;
-          default:
-            print("CameraController Error");
-            // Handle other errors here.
-            break;
+    setState(() {
+      _cameras = cameras;
+      // 카메라 컨트롤러 초기화
+      controller = CameraController(_cameras[0], ResolutionPreset.max,
+          enableAudio: false);
+      controller.initialize().then((_) {
+        if (!mounted) {
+          return;
         }
-      }
+        setState(() {});
+      }).catchError((Object e) {
+        if (e is CameraException) {
+          switch (e.code) {
+            case 'CameraAccessDenied':
+              print("CameraController Error : CameraAccessDenied");
+              break;
+            default:
+              print("CameraController Error");
+              break;
+          }
+        }
+      });
     });
   }
 
