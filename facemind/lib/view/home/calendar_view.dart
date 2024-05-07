@@ -280,6 +280,18 @@ class _CalendarViewState extends State<CalendarView> {
     setState(() {
       selectedDay = day;
     });
-    Get.to(() => DiaryView(date: day));
+    // Get.to(() => DiaryView(date: day));
+    //임시임
+    Get.to(NewDiaryView(
+      date: DateTime.now(),
+      userCondition: UserCondition(
+        date: DateTime.now(),
+        stressLevel: 20,
+        maxHeartRate: 100,
+        minHeartRate: 12,
+        avgHeartRate: 50,
+      ),
+      // controller: null,
+    ));
   }
 }

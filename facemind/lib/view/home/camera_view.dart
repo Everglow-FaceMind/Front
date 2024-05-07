@@ -4,6 +4,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
+import 'package:facemind/model/user_condition.dart';
 import 'package:facemind/view/diary/new_diary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -173,10 +174,7 @@ class _CameraViewState extends State<CameraView> {
                                 width: 80,
                                 height: 80,
                                 child: InkWell(
-                                  onTap: () {
-                                    Get.to(() =>
-                                        NewDiaryView(date: DateTime.now()));
-                                  },
+                                  onTap: () {},
                                   child: Image.asset(
                                     width: 60,
                                     Assets.flipCameraIcon,
@@ -216,7 +214,7 @@ class _CameraViewState extends State<CameraView> {
                                 height: 40,
                                 child: LinearProgressIndicator(
                                   minHeight: 80,
-                                  value: progress / 10,
+                                  value: progress / 20,
                                   backgroundColor: GlobalColors.lightgrayColor,
                                   valueColor: AlwaysStoppedAnimation<Color>(
                                     GlobalColors.mainColor,
@@ -264,7 +262,7 @@ class _CameraViewState extends State<CameraView> {
   void startTimer() {
     const oneSec = Duration(milliseconds: 500);
     timer = Timer.periodic(oneSec, (Timer timer) {
-      if (progress >= 10) {
+      if (progress >= 20) {
         // 나중에 1분으로 타이머 수정
         timer.cancel();
         setState(() {
@@ -273,7 +271,12 @@ class _CameraViewState extends State<CameraView> {
           value = 0;
         });
 
-        Get.off(() => NewDiaryView(date: DateTime.now()));
+        Get.off(() => NewDiaryView(
+              date: DateTime.now(),
+              userCondition:
+                  UserCondition(date: DateTime.now(), stressLevel: 20),
+//측정 결과 페이지로 바꿔야 함. 이건 그냥 테스트용
+            ));
       } else {
         if (!isProcessTakePicture) {
           isProcessTakePicture = true;

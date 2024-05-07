@@ -1,15 +1,20 @@
 import 'package:facemind/utils/global_colors.dart';
 import 'package:facemind/widgets/button_global.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+
+import '../../model/user_condition.dart';
+import 'diary_view.dart';
 
 class NewDiaryView extends StatefulWidget {
   final DateTime date;
+  final UserCondition userCondition;
 
   const NewDiaryView({
     super.key,
     required this.date,
+    required this.userCondition,
   });
 
   @override
@@ -17,13 +22,20 @@ class NewDiaryView extends StatefulWidget {
 }
 
 class _NewDiaryViewState extends State<NewDiaryView> {
-  late DateTime date;
+  final TextEditingController _q3Controller = TextEditingController();
+
   List<String> emotions = [];
+  List<String> reasons = [];
 
   @override
   void initState() {
-    date = widget.date;
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _q3Controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -56,7 +68,14 @@ class _NewDiaryViewState extends State<NewDiaryView> {
             SizedBox(
               child: Row(
                 children: [
-                  _displayStat,
+                  Text(
+                    widget.userCondition.emoji,
+                    style: TextStyle(
+                      fontSize: 55,
+                      color: GlobalColors.darkgrayColor,
+                    ),
+                  ),
+                  _displayStat(widget.userCondition),
                   const Spacer(),
                   _displayDate,
                 ],
@@ -81,7 +100,13 @@ class _NewDiaryViewState extends State<NewDiaryView> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                _buildEmotionInputs(),
+                const SizedBox(width: 4),
+                _underLine(
+                  () {
+                    _input(emotions, true);
+                  },
+                ),
+                const SizedBox(width: 4),
                 const Text(
                   '한 감정을 느꼈다.',
                   style: TextStyle(
@@ -92,12 +117,13 @@ class _NewDiaryViewState extends State<NewDiaryView> {
                 ),
               ],
             ),
+            if (emotions.isNotEmpty) _chipList(emotions),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  '빈칸을 클릭하여 감정을 등록하세요. (최대 3개)\n등록한 값을 터치하면 삭제됩니다.',
+                  '빈칸을 클릭하여 감정을 등록하세요. (최대 3개)',
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     color: GlobalColors.darkyellow,
@@ -126,7 +152,13 @@ class _NewDiaryViewState extends State<NewDiaryView> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                _buildEmotionInputs(),
+                const SizedBox(width: 4),
+                _underLine(
+                  () {
+                    _input(reasons, false);
+                  },
+                ),
+                const SizedBox(width: 4),
                 const Text(
                   '이다.',
                   style: TextStyle(
@@ -138,11 +170,13 @@ class _NewDiaryViewState extends State<NewDiaryView> {
                 const SizedBox(height: 20),
               ],
             ),
+            if (reasons.isNotEmpty) _chipList(reasons),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  '빈칸을 클릭하여 감정을 등록하세요. (최대 3개)\n등록한 값을 터치하면 삭제됩니다.',
+                  '빈칸을 클릭하여 감정을 등록하세요. (최대 3개)',
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     color: GlobalColors.darkyellow,
@@ -163,7 +197,7 @@ class _NewDiaryViewState extends State<NewDiaryView> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                Text(
+                const Text(
                   '그 일의 객관적인 사실만 묘사해보세요.',
                   style: TextStyle(
                     color: Colors.black,
@@ -174,17 +208,31 @@ class _NewDiaryViewState extends State<NewDiaryView> {
               ],
             ),
             Container(
-                height: 100,
-                // 캘린더 전체 영역을 감싸는 컨테이너
-                decoration: BoxDecoration(
-                  color: GlobalColors.subBgColor,
-                  borderRadius: BorderRadius.circular(16),
-                )),
+              height: 120,
+              decoration: BoxDecoration(
+                color: GlobalColors.subBgColor,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: TextField(
+                controller: _q3Controller,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.all(30)),
+              ),
+            ),
             const SizedBox(height: 25),
             ButtonGlobal(
               text: '작성 완료',
-              onPressed: () {},
-              buttonColor: GlobalColors.darkgrayColor,
+              onPressed: _buttonEnabled
+                  ? () {
+                      _moveListPage();
+                    }
+                  : null,
+              buttonColor: _buttonEnabled
+                  ? GlobalColors.mainColor
+                  : GlobalColors.darkgrayColor,
             ),
           ],
         ),
@@ -192,77 +240,101 @@ class _NewDiaryViewState extends State<NewDiaryView> {
     );
   }
 
-  Widget _buildEmotionInputs() {
-    List<Widget> emotionWidgets = [];
+  bool get _buttonEnabled {
+    return emotions.isNotEmpty && reasons.isNotEmpty;
+  }
 
-    for (int i = 0; i < emotions.length; i++) {
-      emotionWidgets.add(
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              emotions.removeAt(i);
-            });
-          },
-          child: Text(
-            emotions[i],
+  void _moveListPage() {
+    Get.to(() => DiaryView(date: DateTime.now()));
+  }
+
+  Widget _underLine(void Function() onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: SizedBox(
+        height: 36,
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 4),
+            height: 1,
+            width: 60,
+            color: Colors.black,
           ),
         ),
-      );
-    }
-
-    if (emotions.length < 3) {
-      emotionWidgets.add(
-        GestureDetector(
-          onTap: () {
-            _showInputDialog();
-          },
-          child: const Text(
-            ' ______',
-          ),
-        ),
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: emotionWidgets,
+      ),
     );
   }
 
-  void _showInputDialog() {
+  Widget _chipList(List<String> list) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: list
+            .map(
+              (e) => Chip(
+                backgroundColor: GlobalColors.subBgColor,
+                deleteIconColor: GlobalColors.mainColor,
+                label: Text(e),
+                onDeleted: () {
+                  setState(() {
+                    list.remove(e);
+                  });
+                },
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  void _input(List<String> textList, bool isEmotion) {
+    if (textList.length < 3) {
+      _showInputDialog(isEmotion);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: GlobalColors.subBgColor,
+          content: const Text(
+            '최대 3개까지 등록 가능합니다.',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 15,
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
+  void _showInputDialog(bool isEmotion) {
     showDialog(
-      barrierColor: Color.fromARGB(162, 161, 161, 161),
+      barrierColor: const Color.fromARGB(162, 161, 161, 161),
       context: context,
       builder: (BuildContext context) {
-        String emotion = '';
+        String text = '';
         return AlertDialog(
           backgroundColor: GlobalColors.subBgColor,
           surfaceTintColor: GlobalColors.whiteColor,
-          title: const Text(
-            '감정 입력',
-            style: TextStyle(
+          title: Text(
+            isEmotion ? '어떤 감정을 느꼈나요?' : '감정의 원인은 무엇인가요?',
+            style: const TextStyle(
               color: Colors.black,
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
           ),
           content: TextField(
             cursorColor: GlobalColors.darkgreenColor,
             onChanged: (value) {
-              emotion = value;
+              text = value;
             },
             onSubmitted: (value) {
-              if (emotion.isNotEmpty) {
-                setState(() {
-                  emotions.add(emotion);
-                });
-                Navigator.pop(context);
-              }
+              _addEmotionReason(isEmotion, text);
+              Navigator.pop(context);
             },
-            decoration: const InputDecoration(
-              //textfield 밑줄 호버 시 색 black
-              hintText: '어떤 감정을 느꼈나요?',
-            ),
           ),
           actions: [
             TextButton(
@@ -274,12 +346,8 @@ class _NewDiaryViewState extends State<NewDiaryView> {
             ),
             TextButton(
               onPressed: () {
-                if (emotion.isNotEmpty) {
-                  setState(() {
-                    emotions.add(emotion);
-                  });
-                  Navigator.pop(context);
-                }
+                _addEmotionReason(isEmotion, text);
+                Navigator.pop(context);
               },
               child: Text('등록',
                   style: TextStyle(color: GlobalColors.darkgreenColor)),
@@ -290,28 +358,45 @@ class _NewDiaryViewState extends State<NewDiaryView> {
     );
   }
 
-  Widget get _displayStat {
-    return const Column(
+  void _addEmotionReason(bool isEmotion, String text) {
+    if (isEmotion) {
+      setState(() {
+        emotions.add(text);
+      });
+    } else {
+      setState(() {
+        reasons.add(text);
+      });
+    }
+  }
+
+  Widget _displayStat(UserCondition userCondition) {
+    final avgHeartRate = userCondition.avgHeartRate;
+    final maxHeartRate = userCondition.maxHeartRate;
+    final minHeartRate = userCondition.minHeartRate;
+    final stressLevel = userCondition.stressLevel;
+
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '평균',
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+          '평균 ${avgHeartRate.toString()}',
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
           textAlign: TextAlign.left,
         ),
         Text(
-          '최고',
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+          '최고 ${maxHeartRate.toString()}',
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
           textAlign: TextAlign.left,
         ),
         Text(
-          '최저',
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+          '최저 ${minHeartRate.toString()}',
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
           textAlign: TextAlign.left,
         ),
         Text(
-          '스트레스 지수',
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+          '스트레스 지수 ${stressLevel.toString()}',
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
           textAlign: TextAlign.left,
         ),
       ],

@@ -1,6 +1,7 @@
 // import 'package:camera/camera.dart';
 import 'package:camera/camera.dart';
 import 'package:facemind/utils/user_store.dart';
+import 'package:facemind/view/home/home_view.dart';
 import 'package:facemind/view/splash.view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,8 @@ class App extends StatelessWidget {
         DefaultWidgetsLocalizations.delegate,
       ],
       debugShowCheckedModeBanner: false,
-      home: SplashView(),
+      //임시임
+      home: HomeView(),
     );
   }
 }
