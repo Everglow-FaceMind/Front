@@ -4,6 +4,7 @@ import 'package:facemind/utils/global_colors.dart';
 import 'package:facemind/view/home/analyze_view.dart';
 import 'package:facemind/view/home/calendar_view.dart';
 import 'package:facemind/view/home/my_page_view.dart';
+import 'package:facemind/widgets/diary_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -41,7 +42,8 @@ class _DiaryViewState extends State<DiaryView> {
       child: Scaffold(
         backgroundColor: GlobalColors.whiteColor,
         body: Container(
-          padding: const EdgeInsets.all(25.0),
+          padding: const EdgeInsets.only(
+              top: 65.0, right: 20.0, left: 20.0, bottom: 35.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -68,174 +70,14 @@ class _DiaryViewState extends State<DiaryView> {
                   itemCount: diaryList.length,
                   itemBuilder: (context, index) {
                     final diary = diaryList[index];
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: GlobalColors.subBgColor,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                diary.userCondition.emoji,
-                                style: TextStyle(
-                                  fontSize: 40,
-                                  color: GlobalColors.darkgrayColor,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    diary.emotions.join(", "),
-                                    style: const TextStyle(
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  Text(
-                                    DateFormat('HH:mm').format(diary.date),
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const Spacer(),
-                              Row(
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      // 수정 기능 구현
-                                    },
-                                    child: const Text(
-                                      "수정",
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          color: Color(0xffF59A2F)),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Align(
-                                    alignment: Alignment.center,
-                                    child: Container(
-                                      height: 12,
-                                      width: 0.5,
-                                      color: GlobalColors.darkgrayColor,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  InkWell(
-                                    onTap: () {
-                                      // 삭제 기능 구현
-                                    },
-                                    child: Text(
-                                      "삭제",
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          color: GlobalColors.darkgreenColor),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Text(
-                                '느낀 감정',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  color: GlobalColors.darkgrayColor,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                diary.emotions.join(","),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.black,
-                                ),
-                              )
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                '감정의 원인',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  color: GlobalColors.darkgrayColor,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                diary.reasons.join(", "),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.black,
-                                ),
-                              )
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: [
-                              const Text(
-                                'Note',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              Expanded(
-                                child: Text(
-                                  isExpanded || diary.content.length <= 50
-                                      ? diary.content
-                                      : diary.content.substring(0, 50),
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                    color: GlobalColors.darkgrayColor,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          if (diary.content.length > 50)
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  isExpanded = true; // 버튼을 누르면 확장되도록
-                                });
-                              },
-                              child: Text(
-                                "+ Read More",
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.w700,
-                                  color: GlobalColors.mainColor,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
+                    return DiaryListItem(
+                      data: diary,
+                      onDelete: () {
+                        //삭제 기능 구현 여기다가
+                      },
+                      onEdit: () {
+                        //수정기능구현여기다가함
+                      },
                     );
                   },
                 ),
