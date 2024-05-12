@@ -1,6 +1,6 @@
 import 'package:facemind/view/home/analyze_view.dart';
 import 'package:facemind/view/home/calendar_view.dart';
-import 'package:facemind/view/home/mypage/my_page_view.dart';
+import 'package:facemind/view/home/my_page_view.dart';
 import 'package:flutter/material.dart';
 import 'package:facemind/utils/global_colors.dart';
 
