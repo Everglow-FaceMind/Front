@@ -104,170 +104,177 @@ class _NewDiaryViewState extends State<NewDiaryView> {
   }
 
   Widget _bodyView() {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            child: Row(
+    //화면 암데나 터치하면 키보드 내리기
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              child: Row(
+                children: [
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.userCondition.emoji,
+                    style: TextStyle(
+                      fontSize: 55,
+                      color: GlobalColors.darkgrayColor,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  _displayStat(widget.userCondition),
+                  const Spacer(),
+                  _displayDate,
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
               children: [
-                const SizedBox(height: 10),
                 Text(
-                  widget.userCondition.emoji,
+                  'Q1 ',
                   style: TextStyle(
-                    fontSize: 55,
-                    color: GlobalColors.darkgrayColor,
+                    color: GlobalColors.darkgreenColor,
+                    fontSize: 23,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(width: 10),
-                _displayStat(widget.userCondition),
-                const Spacer(),
-                _displayDate,
+                const Text(
+                  '나는',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                _underLine(
+                  () {
+                    _input(emotions, true);
+                  },
+                ),
+                const SizedBox(width: 4),
+                const Text(
+                  '한 감정을 느꼈다.',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Text(
-                'Q1 ',
-                style: TextStyle(
-                  color: GlobalColors.darkgreenColor,
-                  fontSize: 23,
-                  fontWeight: FontWeight.w700,
+            if (emotions.isNotEmpty) _chipList(emotions),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  '빈칸을 클릭하여 감정을 등록하세요. (최대 3개)',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: GlobalColors.darkyellow,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              const Text(
-                '나는',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(width: 4),
-              _underLine(
-                () {
-                  _input(emotions, true);
-                },
-              ),
-              const SizedBox(width: 4),
-              const Text(
-                '한 감정을 느꼈다.',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          if (emotions.isNotEmpty) _chipList(emotions),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                '빈칸을 클릭하여 감정을 등록하세요. (최대 3개)',
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  color: GlobalColors.darkyellow,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Text(
-                'Q2 ',
-                style: TextStyle(
-                  color: GlobalColors.darkgreenColor,
-                  fontSize: 23,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const Text(
-                '내 감정의 원인은',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(width: 4),
-              _underLine(
-                () {
-                  _input(reasons, false);
-                },
-              ),
-              const SizedBox(width: 4),
-              const Text(
-                '이다.',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
-          if (reasons.isNotEmpty) _chipList(reasons),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                '빈칸을 클릭하여 감정을 등록하세요. (최대 3개)',
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  color: GlobalColors.darkyellow,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Text(
-                'Q3 ',
-                style: TextStyle(
-                  color: GlobalColors.darkgreenColor,
-                  fontSize: 23,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const Text(
-                '그 일의 객관적인 사실만 묘사해보세요.',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          Container(
-            height: 100,
-            decoration: BoxDecoration(
-              color: GlobalColors.subBgColor,
-              borderRadius: BorderRadius.circular(16),
+              ],
             ),
-            child: TextField(
-              controller: _q3Controller,
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              decoration: const InputDecoration(
-                  border: InputBorder.none, contentPadding: EdgeInsets.all(30)),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Text(
+                  'Q2 ',
+                  style: TextStyle(
+                    color: GlobalColors.darkgreenColor,
+                    fontSize: 23,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const Text(
+                  '내 감정의 원인은',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                _underLine(
+                  () {
+                    _input(reasons, false);
+                  },
+                ),
+                const SizedBox(width: 4),
+                const Text(
+                  '이다.',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
-          ),
-          const SizedBox(height: 25),
-        ],
+            if (reasons.isNotEmpty) _chipList(reasons),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  '빈칸을 클릭하여 감정을 등록하세요. (최대 3개)',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: GlobalColors.darkyellow,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Text(
+                  'Q3 ',
+                  style: TextStyle(
+                    color: GlobalColors.darkgreenColor,
+                    fontSize: 23,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const Text(
+                  '그 일의 객관적인 사실만 묘사해보세요.',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            Container(
+              height: 180,
+              decoration: BoxDecoration(
+                color: GlobalColors.subBgColor,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: TextField(
+                controller: _q3Controller,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.all(30)),
+              ),
+            ),
+            const SizedBox(height: 25),
+          ],
+        ),
       ),
     );
   }
@@ -334,7 +341,6 @@ class _NewDiaryViewState extends State<NewDiaryView> {
   }
 
   void _showInputDialog(bool isEmotion) {
-    // 조건문 ? 참 : 거짓;
     showDialog(
       barrierColor: const Color.fromARGB(162, 161, 161, 161),
       context: context,
@@ -380,7 +386,10 @@ class _NewDiaryViewState extends State<NewDiaryView> {
           ],
         );
       },
-    );
+    ).then((value) {
+      //다이얼로그 종료 되면 키보드 아래로 내려가게!!
+      FocusManager.instance.primaryFocus?.unfocus();
+    });
   }
 
   void _addEmotionReason(bool isEmotion, String text) {
