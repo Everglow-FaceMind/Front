@@ -1,5 +1,4 @@
 import 'package:facemind/utils/global_colors.dart';
-import 'package:facemind/view/home/camera_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:facemind/view/signup/signup_view.dart';
@@ -12,8 +11,7 @@ import '../home/home_view.dart';
 import '../../widgets/login_text_form.dart';
 
 class Assets {
-  static String Logo = 'assets/Images/logo.png';
-  static String Logo2 = 'assets/Images/logo2.png';
+  static String logo2 = 'assets/Images/logo2.png';
 }
 
 class LoginView extends StatefulWidget {
@@ -51,7 +49,7 @@ class _LoginViewState extends State<LoginView> {
                 const SizedBox(height: 80),
                 Image.asset(
                   width: 150,
-                  Assets.Logo2,
+                  Assets.logo2,
                 ),
                 const SizedBox(height: 30),
                 Container(

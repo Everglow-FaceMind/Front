@@ -16,7 +16,7 @@ class _MyPageViewState extends State<MyPageView> {
 
   @override
   Widget build(BuildContext context) {
-    late final UserStore _userStore = Get.find();
+    late final UserStore userStore = Get.find();
 
     return Scaffold(
         backgroundColor: GlobalColors.whiteColor,
@@ -50,36 +50,36 @@ class _MyPageViewState extends State<MyPageView> {
                       Container(
                         padding: const EdgeInsets.only(left: 12),
                         child: Text(
-                          '${_userStore.currentUser?.name ?? 'name'}',
-                          style: TextStyle(
+                          userStore.currentUser?.name ?? 'name',
+                          style: const TextStyle(
                             color: Colors.black,
                             fontSize: 22,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
                       //사용자 한줄소개
                       Container(
                         padding: const EdgeInsets.only(left: 12),
                         child: Text(
-                          '${_userStore.currentUser?.bio ?? 'bio'}',
-                          style: TextStyle(
+                          userStore.currentUser?.bio ?? 'bio',
+                          style: const TextStyle(
                             color: Colors.black,
                             fontSize: 18,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),
-                      SizedBox(height: 25),
+                      const SizedBox(height: 25),
 
                       //사용자 이메일
                       Container(
                         padding: const EdgeInsets.only(left: 18),
                         child: Text(
-                          '이메일    ${_userStore.currentUser?.email ?? 'email'}',
-                          style: TextStyle(
+                          '이메일    ${userStore.currentUser?.email ?? 'email'}',
+                          style: const TextStyle(
                             color: Colors.black,
                             fontSize: 15,
                             fontWeight: FontWeight.w400,
@@ -104,7 +104,7 @@ class _MyPageViewState extends State<MyPageView> {
                           },
                           child: Container(
                             padding: const EdgeInsets.only(left: 15),
-                            child: Text(
+                            child: const Text(
                               '알림 설정',
                               style: TextStyle(
                                   fontSize: 17, fontWeight: FontWeight.w400),
@@ -129,7 +129,7 @@ class _MyPageViewState extends State<MyPageView> {
                           },
                           child: Container(
                             padding: const EdgeInsets.only(left: 15),
-                            child: Text(
+                            child: const Text(
                               '로그아웃',
                               style: TextStyle(
                                   fontSize: 17, fontWeight: FontWeight.w400),
@@ -153,7 +153,7 @@ class _MyPageViewState extends State<MyPageView> {
                           },
                           child: Container(
                             padding: const EdgeInsets.only(left: 15),
-                            child: Text(
+                            child: const Text(
                               '계정탈퇴',
                               style: TextStyle(
                                   fontSize: 17, fontWeight: FontWeight.w400),

@@ -1,7 +1,5 @@
 import 'package:facemind/model/user_condition.dart';
 import 'package:facemind/utils/user_store.dart';
-import 'package:facemind/view/diary/diary_view.dart';
-import 'package:facemind/view/diary/new_diary.dart';
 import 'package:facemind/view/home/result_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,6 +22,7 @@ class _CalendarViewState extends State<CalendarView> {
   late final UserStore _userStore = Get.find();
   DateTime? selectedDay;
 
+  // 유저의 컨디션 정보가 저장된 리스트
   final List<UserCondition> _conditionList = [];
 
   @override
@@ -44,6 +43,8 @@ class _CalendarViewState extends State<CalendarView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 35),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        // 균일한 여백을 위해 Spacer 위젯 사용
+        // https://swjs.tistory.com/entry/Flutter-Spacer-%EC%9D%B4%EC%9A%A9%ED%95%98%EA%B8%B0
         const Spacer(),
         _header(),
         const Spacer(),
@@ -91,6 +92,7 @@ class _CalendarViewState extends State<CalendarView> {
   Widget _calendar() {
     return Container(
       // 캘린더 전체 영역을 감싸는 컨테이너
+      // decoration을 통해서 모서리를 둥글게 만들고 배경색을 넣어줌
       decoration: BoxDecoration(
         color: GlobalColors.subBgColor,
         borderRadius: BorderRadius.circular(16),

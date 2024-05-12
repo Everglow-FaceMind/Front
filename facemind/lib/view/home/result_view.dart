@@ -47,14 +47,14 @@ class _ResultViewState extends State<ResultView> {
             color: Colors.grey[500],
             thickness: 0.8,
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Container(
             height: 200,
             decoration: BoxDecoration(
               color: GlobalColors.subBgColor,
               borderRadius: BorderRadius.circular(16),
             ),
-            padding: EdgeInsets.all(15),
+            padding: const EdgeInsets.all(15),
             child: Column(
               children: [
                 Text(
@@ -74,7 +74,7 @@ class _ResultViewState extends State<ResultView> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
           Container(
@@ -83,14 +83,14 @@ class _ResultViewState extends State<ResultView> {
               color: GlobalColors.subBgColor,
               borderRadius: BorderRadius.circular(16),
             ),
-            padding: EdgeInsets.all(15),
+            padding: const EdgeInsets.all(15),
             child: Column(
               children: [
                 Text(
                   '스트레스지수',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
-                Spacer(),
+                const Spacer(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -105,11 +105,11 @@ class _ResultViewState extends State<ResultView> {
                     _displayStress(widget.userCondition),
                   ],
                 ),
-                Spacer(),
+                const Spacer(),
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           ButtonGlobal(
@@ -129,7 +129,7 @@ class _ResultViewState extends State<ResultView> {
             },
             buttonColor: GlobalColors.mainColor,
           ),
-          SizedBox(
+          const SizedBox(
             height: 15,
           ),
           ButtonGlobal(
@@ -175,11 +175,9 @@ Widget _displayStat(UserCondition userCondition) {
 Widget _displayStress(UserCondition userCondition) {
   final stressLevel = userCondition.stressLevel;
 
-  return Container(
-    child: Text(
-      stressLevel.toString(),
-      style: const TextStyle(fontSize: 50, fontWeight: FontWeight.w500),
-      textAlign: TextAlign.left,
-    ),
+  return Text(
+    stressLevel.toString(),
+    style: const TextStyle(fontSize: 50, fontWeight: FontWeight.w500),
+    textAlign: TextAlign.left,
   );
 }

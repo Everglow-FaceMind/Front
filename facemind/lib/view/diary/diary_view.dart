@@ -14,9 +14,9 @@ class DiaryView extends StatefulWidget {
   final DateTime date;
 
   const DiaryView({
-    Key? key,
+    super.key,
     required this.date,
-  }) : super(key: key);
+  });
 
   @override
   State<DiaryView> createState() => _DiaryViewState();
@@ -73,8 +73,8 @@ class _DiaryViewState extends State<DiaryView> {
                         color: GlobalColors.subBgColor,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      margin: EdgeInsets.symmetric(vertical: 10),
-                      padding: EdgeInsets.all(16),
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -87,13 +87,13 @@ class _DiaryViewState extends State<DiaryView> {
                                   color: GlobalColors.darkgrayColor,
                                 ),
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     diary.emotions.join(", "),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 25,
                                       fontWeight: FontWeight.w800,
                                       color: Colors.black,
@@ -101,7 +101,7 @@ class _DiaryViewState extends State<DiaryView> {
                                   ),
                                   Text(
                                     DateFormat('HH:mm').format(diary.date),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w800,
                                       color: Colors.black,
@@ -109,21 +109,21 @@ class _DiaryViewState extends State<DiaryView> {
                                   ),
                                 ],
                               ),
-                              Spacer(),
+                              const Spacer(),
                               Row(
                                 children: [
                                   InkWell(
                                     onTap: () {
                                       // 수정 기능 구현
                                     },
-                                    child: Text(
+                                    child: const Text(
                                       "수정",
                                       style: TextStyle(
                                           fontSize: 10,
                                           color: Color(0xffF59A2F)),
                                     ),
                                   ),
-                                  SizedBox(width: 5),
+                                  const SizedBox(width: 5),
                                   Align(
                                     alignment: Alignment.center,
                                     child: Container(
@@ -132,7 +132,7 @@ class _DiaryViewState extends State<DiaryView> {
                                       color: GlobalColors.darkgrayColor,
                                     ),
                                   ),
-                                  SizedBox(width: 5),
+                                  const SizedBox(width: 5),
                                   InkWell(
                                     onTap: () {
                                       // 삭제 기능 구현
@@ -148,7 +148,7 @@ class _DiaryViewState extends State<DiaryView> {
                               ),
                             ],
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           Row(
                             children: [
                               Text(
@@ -159,10 +159,10 @@ class _DiaryViewState extends State<DiaryView> {
                                   color: GlobalColors.darkgrayColor,
                                 ),
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Text(
                                 diary.emotions.join(","),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.black,
@@ -180,10 +180,10 @@ class _DiaryViewState extends State<DiaryView> {
                                   color: GlobalColors.darkgrayColor,
                                 ),
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               Text(
                                 diary.reasons.join(", "),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.black,
@@ -191,10 +191,10 @@ class _DiaryViewState extends State<DiaryView> {
                               )
                             ],
                           ),
-                          SizedBox(height: 5),
+                          const SizedBox(height: 5),
                           Row(
                             children: [
-                              Text(
+                              const Text(
                                 'Note',
                                 style: TextStyle(
                                   fontSize: 13,
@@ -202,7 +202,7 @@ class _DiaryViewState extends State<DiaryView> {
                                   color: Colors.black,
                                 ),
                               ),
-                              SizedBox(width: 5),
+                              const SizedBox(width: 5),
                               Expanded(
                                 child: Text(
                                   isExpanded || diary.content.length <= 50
@@ -217,7 +217,7 @@ class _DiaryViewState extends State<DiaryView> {
                               ),
                             ],
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           if (diary.content.length > 50)
                             TextButton(
                               onPressed: () {
@@ -377,7 +377,7 @@ class _DiaryViewState extends State<DiaryView> {
 }
 
 class HomeView extends StatefulWidget {
-  const HomeView({Key? key}) : super(key: key);
+  const HomeView({super.key});
 
   @override
   State<StatefulWidget> createState() => _HomeViewState();

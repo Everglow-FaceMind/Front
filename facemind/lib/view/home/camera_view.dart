@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
-import 'package:facemind/view/diary/new_diary.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import '../../utils/global_colors.dart';
@@ -110,7 +107,7 @@ class _CameraViewState extends State<CameraView> {
     return Scaffold(
       backgroundColor: GlobalColors.whiteColor,
       appBar: AppBar(
-        title: Text('심박수 측정하기'),
+        title: const Text('심박수 측정하기'),
         leading: IconButton(
           onPressed: () {
             Get.back();
@@ -254,37 +251,6 @@ class _CameraViewState extends State<CameraView> {
         }),
       ),
     );
-
-    // return Stack(
-    //   //backgroundColor: GlobalColors.whiteColor,
-    //   children: [
-    //     // 화면 전체를 차지하도록 Positioned.fill 위젯 사용
-    //     Positioned.fill(
-    //       // 카메라 촬영 화면이 보일 CameraPrivew
-    //       child: CameraPreview(controller),
-    //     ),
-    //     // 하단 중앙에 위치도록 Align 위젯 설정
-    //     Align(
-    //       alignment: Alignment.bottomCenter,
-    //       child: Padding(
-    //         padding: const EdgeInsets.all(15.0),
-    //         // 버튼 클릭 이벤트 정의를 위한 GestureDetector
-    //         child: GestureDetector(
-    //           onTap: () {
-    //             // 사진 찍기 함수 호출
-    //             _recordVideo();
-    //           },
-    //           // 버튼으로 표시될 Icon
-    //           child: const Icon(
-    //             Icons.camera_enhance,
-    //             size: 70,
-    //             color: Colors.white,
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //   ],
-    // );
   }
 
   bool isProcessTakePicture = false;

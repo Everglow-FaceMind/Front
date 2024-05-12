@@ -2,9 +2,11 @@ import 'package:facemind/utils/global_colors.dart';
 import 'package:flutter/material.dart';
 
 class Bottom extends StatelessWidget {
+  const Bottom({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 65,
       child: Container(
         decoration: BoxDecoration(

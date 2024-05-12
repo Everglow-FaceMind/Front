@@ -1,8 +1,5 @@
 import 'package:facemind/widgets/charts/line_chart.dart';
 import 'package:facemind/widgets/charts/pie_chart.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class AnalyzeView extends StatefulWidget {
@@ -39,11 +36,11 @@ class _AnalyzeViewState extends State<AnalyzeView> {
             color: Colors.grey[500],
             thickness: 0.8,
           ),
-          Container(
+          const SizedBox(
             height: 270, // 원하는 높이 설정
             child: LineChartSample1(),
           ),
-          Container(
+          const SizedBox(
             height: 200,
             child: PieChartSample2(),
           )
