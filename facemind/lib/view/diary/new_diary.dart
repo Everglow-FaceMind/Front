@@ -208,7 +208,7 @@ class _NewDiaryViewState extends State<NewDiaryView> {
               ],
             ),
             Container(
-              height: 120,
+              height: 100,
               decoration: BoxDecoration(
                 color: GlobalColors.subBgColor,
                 borderRadius: BorderRadius.circular(16),
@@ -310,6 +310,7 @@ class _NewDiaryViewState extends State<NewDiaryView> {
   }
 
   void _showInputDialog(bool isEmotion) {
+    // 조건문 ? 참 : 거짓;
     showDialog(
       barrierColor: const Color.fromARGB(162, 161, 161, 161),
       context: context,

@@ -2,6 +2,7 @@ import 'package:facemind/model/user_condition.dart';
 import 'package:facemind/utils/user_store.dart';
 import 'package:facemind/view/diary/diary_view.dart';
 import 'package:facemind/view/diary/new_diary.dart';
+import 'package:facemind/view/home/result_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -52,7 +53,7 @@ class _CalendarViewState extends State<CalendarView> {
           text: '심박수 측정하기',
           onPressed: () {
             Get.to(() => const CameraView());
-            // Get.to(
+
             //     () => NewDiaryView(date: DateTime.now())); // 임시로 일기 작성 페이지로 해둠
           },
           buttonColor: GlobalColors.mainColor,
@@ -281,9 +282,7 @@ class _CalendarViewState extends State<CalendarView> {
       selectedDay = day;
     });
     // Get.to(() => DiaryView(date: day));
-    //임시임
-    Get.to(NewDiaryView(
-      date: DateTime.now(),
+    Get.to(ResultView(
       userCondition: UserCondition(
         date: DateTime.now(),
         stressLevel: 20,
