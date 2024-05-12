@@ -269,7 +269,7 @@ class _CalendarViewState extends State<CalendarView> {
         child: Text(
           condition.emoji,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 18,
             color: GlobalColors.darkgrayColor,
           ),
         ),
