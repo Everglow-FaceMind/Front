@@ -12,12 +12,8 @@ class MyPageView extends StatefulWidget {
 }
 
 class _MyPageViewState extends State<MyPageView> {
-  late final UserStore _userStore = Get.find();
-
   @override
   Widget build(BuildContext context) {
-    late final UserStore userStore = Get.find();
-
     return Scaffold(
         backgroundColor: GlobalColors.whiteColor,
         body: SafeArea(
@@ -45,12 +41,11 @@ class _MyPageViewState extends State<MyPageView> {
                         thickness: 0.8,
                       ),
                       const SizedBox(height: 10),
-
                       //사용자 이름
                       Container(
                         padding: const EdgeInsets.only(left: 12),
                         child: Text(
-                          userStore.currentUser?.name ?? 'name',
+                          UserStore.to.currentUser?.nickname ?? 'name',
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 22,
@@ -64,7 +59,7 @@ class _MyPageViewState extends State<MyPageView> {
                       Container(
                         padding: const EdgeInsets.only(left: 12),
                         child: Text(
-                          userStore.currentUser?.bio ?? 'bio',
+                          UserStore.to.currentUser?.introduction ?? 'bio',
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 18,
@@ -78,7 +73,7 @@ class _MyPageViewState extends State<MyPageView> {
                       Container(
                         padding: const EdgeInsets.only(left: 18),
                         child: Text(
-                          '이메일    ${userStore.currentUser?.email ?? 'email'}',
+                          '이메일    ${UserStore.to.currentUser?.email ?? 'email'}',
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 15,
@@ -95,21 +90,22 @@ class _MyPageViewState extends State<MyPageView> {
 
                       //알림 설정
                       InkWell(
-                          hoverColor: Colors.transparent,
-                          focusColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          splashColor: Colors.transparent,
-                          onTap: () {
-                            //알림 설정 뷰 구현 안 함.
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.only(left: 15),
-                            child: const Text(
-                              '알림 설정',
-                              style: TextStyle(
-                                  fontSize: 17, fontWeight: FontWeight.w400),
-                            ),
-                          )),
+                        hoverColor: Colors.transparent,
+                        focusColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onTap: () {
+                          //알림 설정 뷰는 구현 안 함.
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.only(left: 15),
+                          child: const Text(
+                            '알림 설정',
+                            style: TextStyle(
+                                fontSize: 17, fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                      ),
                       Divider(
                         //구분선
                         height: 28.0,
@@ -119,22 +115,24 @@ class _MyPageViewState extends State<MyPageView> {
 
                       //로그아웃
                       InkWell(
-                          hoverColor: Colors.transparent,
-                          focusColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          splashColor: Colors.transparent,
-                          onTap: () {
-                            Get.offAll(() => const LoginView());
-                            //로그아웃
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.only(left: 15),
-                            child: const Text(
-                              '로그아웃',
-                              style: TextStyle(
-                                  fontSize: 17, fontWeight: FontWeight.w400),
-                            ),
-                          )),
+                        hoverColor: Colors.transparent,
+                        focusColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onTap: () {
+                          UserStore.to.updateUser(null);
+                          Get.offAll(() => const LoginView());
+                          //로그아웃
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.only(left: 15),
+                          child: const Text(
+                            '로그아웃',
+                            style: TextStyle(
+                                fontSize: 17, fontWeight: FontWeight.w400),
+                          ),
+                        ),
+                      ),
                       Divider(
                         //구분선
                         height: 28.0,
@@ -153,8 +151,8 @@ class _MyPageViewState extends State<MyPageView> {
                           },
                           child: Container(
                             padding: const EdgeInsets.only(left: 15),
-                            child: const Text(
-                              '계정탈퇴',
+                            child: Text(
+                              '계정탈퇴', //계정탈퇴는 구현 안 함
                               style: TextStyle(
                                   fontSize: 17, fontWeight: FontWeight.w400),
                             ),
