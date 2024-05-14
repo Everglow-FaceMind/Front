@@ -45,7 +45,7 @@ class _MyPageViewState extends State<MyPageView> {
                       Container(
                         padding: const EdgeInsets.only(left: 12),
                         child: Text(
-                          UserStore.to.currentUser?.nickname ?? 'name',
+                          '이름    ${UserStore.to.currentUser?.nickname ?? 'nickname'}', //왜 이름이랑 소개 안나오지
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 22,
@@ -59,7 +59,7 @@ class _MyPageViewState extends State<MyPageView> {
                       Container(
                         padding: const EdgeInsets.only(left: 12),
                         child: Text(
-                          UserStore.to.currentUser?.introduction ?? 'bio',
+                          '소개    ${UserStore.to.currentUser?.introduction ?? 'introduction'}',
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 18,
@@ -151,7 +151,7 @@ class _MyPageViewState extends State<MyPageView> {
                           },
                           child: Container(
                             padding: const EdgeInsets.only(left: 15),
-                            child: Text(
+                            child: const Text(
                               '계정탈퇴', //계정탈퇴는 구현 안 함
                               style: TextStyle(
                                   fontSize: 17, fontWeight: FontWeight.w400),

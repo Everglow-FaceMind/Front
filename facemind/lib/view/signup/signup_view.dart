@@ -417,8 +417,8 @@ class _SignupViewState extends State<SignupView> {
       if (userInfo != null) {
         _userStore.updateUser(UserInfo(
           email: _emailController.text,
-          nickname: _passwordController.text,
-          introduction: _nicknameController.text,
+          nickname: _nicknameController.text,
+          introduction: _bioController.text,
           token: userInfo.token,
         ));
         Get.offAll(() => const HomeView());
