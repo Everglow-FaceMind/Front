@@ -1,3 +1,5 @@
+import 'package:facemind/api/api_client.dart';
+import 'package:facemind/api/model/user_info.dart';
 import 'package:facemind/model/user.dart';
 import 'package:facemind/utils/global_colors.dart';
 import 'package:facemind/utils/string_extension.dart';
@@ -386,14 +388,7 @@ class _SignupViewState extends State<SignupView> {
                 Get.snackbar('닉네임 입력', '닉네임을 입력해주세요');
                 return;
               } else {
-                _userStore.updateUser(
-                  User(
-                    email: _email,
-                    name: _nickname,
-                    bio: _bioName,
-                  ),
-                );
-                Get.offAll(() => const HomeView());
+                signUp();
               }
             },
             buttonColor: _nickname.trim().isNotEmpty
@@ -403,6 +398,34 @@ class _SignupViewState extends State<SignupView> {
         ],
       ),
     );
+  }
+
+  Future<void> signUp() async {
+    final result = await ApiClient.to.signUp(
+      email: _emailController.text,
+      password: _passwordController.text,
+      nickname: _nicknameController.text,
+      alarmAllowance: false,
+      introduction: _bioController.text,
+    );
+
+    if (!result) {
+      Get.snackbar('회원가입 실패', '회원가입에 실패했습니다.');
+    } else {
+      final userInfo = await ApiClient.to
+          .login(_emailController.text, _passwordController.text);
+      if (userInfo != null) {
+        _userStore.updateUser(UserInfo(
+          email: _emailController.text,
+          nickname: _passwordController.text,
+          introduction: _nicknameController.text,
+          token: userInfo.token,
+        ));
+        Get.offAll(() => const HomeView());
+      } else {
+        Get.snackbar('로그인 실패', '로그인 페이지에세 로그인을 시도 해주세요.');
+      }
+    }
   }
 
   /// 뒤로가기

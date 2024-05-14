@@ -1,3 +1,4 @@
+import 'package:facemind/api/model/home_calendar_response.dart';
 import 'package:facemind/model/user_condition.dart';
 import 'package:facemind/utils/user_store.dart';
 import 'package:facemind/view/home/result_view.dart';
@@ -6,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../../api/api_client.dart';
 import '../../utils/global_colors.dart';
 import '../../widgets/button_global.dart';
 import '../../widgets/dropdown.dart';
@@ -19,18 +21,15 @@ class CalendarView extends StatefulWidget {
 }
 
 class _CalendarViewState extends State<CalendarView> {
-  late final UserStore _userStore = Get.find();
   DateTime? selectedDay;
 
   // 유저의 컨디션 정보가 저장된 리스트
-  final List<UserCondition> _conditionList = [];
+  HomeCalendarData? _homeCalendarData;
 
   @override
   void initState() {
     super.initState();
-    _fetchConditionList().then((value) {
-      setState(() {});
-    });
+    _fetchHomeData();
   }
 
   @override
@@ -43,8 +42,6 @@ class _CalendarViewState extends State<CalendarView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 35),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // 균일한 여백을 위해 Spacer 위젯 사용
-        // https://swjs.tistory.com/entry/Flutter-Spacer-%EC%9D%B4%EC%9A%A9%ED%95%98%EA%B8%B0
         const Spacer(),
         _header(),
         const Spacer(),
@@ -54,8 +51,6 @@ class _CalendarViewState extends State<CalendarView> {
           text: '심박수 측정하기',
           onPressed: () {
             Get.to(() => const CameraView());
-
-            //     () => NewDiaryView(date: DateTime.now())); // 임시로 일기 작성 페이지로 해둠
           },
           buttonColor: GlobalColors.mainColor,
         ),
@@ -64,29 +59,16 @@ class _CalendarViewState extends State<CalendarView> {
     );
   }
 
-  /// 컨디션 리스트를 가져오는 함수
-  /// 추후 서버에서 데이터를 가져오게 변경해야함
-  Future<void> _fetchConditionList() async {
-    // 서버에서 데이터를 가져오는 부분
-    // 지금은 UI확인을 위해 임시 데이터를 넣어둠
-    _conditionList.addAll([
-      UserCondition(date: DateTime.now(), stressLevel: 20),
-      UserCondition(
-          date: DateTime.now().add(const Duration(days: 1)), stressLevel: 40),
-      UserCondition(
-          date: DateTime.now().add(const Duration(days: 3)), stressLevel: 60),
-      UserCondition(
-          date: DateTime.now().subtract(const Duration(days: 2)),
-          stressLevel: 80),
-      UserCondition(
-          date: DateTime.now().subtract(const Duration(days: 4)),
-          stressLevel: 100),
-      UserCondition(
-          date: DateTime.now().add(const Duration(days: 6)), stressLevel: 30),
-      UserCondition(
-          date: DateTime.now().subtract(const Duration(days: 7)),
-          stressLevel: 0),
-    ]);
+  Future<void> _fetchHomeData() async {
+    final result = await ApiClient.to.fetchHomeData(date: DateTime.now());
+    setState(() {
+      _homeCalendarData = result;
+      UserStore.to.updateUser(
+        UserStore.to.currentUser?.copyWith(
+          nickname: result?.nickname ?? '',
+        ),
+      );
+    });
   }
 
   Widget _calendar() {
@@ -165,7 +147,7 @@ class _CalendarViewState extends State<CalendarView> {
       children: [
         const SizedBox(height: 30),
         Text(
-          '${_userStore.currentUser?.name ?? ''}님',
+          '${_homeCalendarData?.nickname ?? ''}님',
           textAlign: TextAlign.left,
           style: const TextStyle(fontSize: 23.0, fontWeight: FontWeight.w800),
         ),
@@ -260,9 +242,10 @@ class _CalendarViewState extends State<CalendarView> {
 
   Widget _markerCell(DateTime day) {
     // 해당 날짜의 컨디션 정보를 가져옴
-    final condition = _conditionList
-        .where((element) => isSameDay(element.date, day))
-        .firstOrNull;
+    final condition = _homeCalendarData?.results.where((element) {
+      final dateText = DateFormat('yyyy-MM-dd').format(day);
+      return element.date == dateText;
+    }).firstOrNull;
 
     if (condition != null) {
       return Center(

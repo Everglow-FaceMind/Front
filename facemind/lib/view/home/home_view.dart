@@ -16,6 +16,11 @@ class _HomeViewState extends State<HomeView> {
   int _selectedIndex = 1;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();

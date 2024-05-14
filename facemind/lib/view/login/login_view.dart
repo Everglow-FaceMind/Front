@@ -1,10 +1,10 @@
+import 'package:facemind/api/api_client.dart';
 import 'package:facemind/utils/global_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:facemind/view/signup/signup_view.dart';
 import 'package:facemind/widgets/button_global.dart';
 
-import '../../model/user.dart';
 import '../../utils/string_extension.dart';
 import '../../utils/user_store.dart';
 import '../home/home_view.dart';
@@ -23,9 +23,6 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  /// GetX에서 전역으로 UserStore 접근을 하기 위해 사용하는 코드
-  late final UserStore _userStore = Get.find();
 
   @override
   void dispose() {
@@ -140,35 +137,15 @@ class _LoginViewState extends State<LoginView> {
   }
 
   /// 로그인 동작
-  void _login() {
-    _requestLogin().then((value) {
-      if (value) {
-        final email = _emailController.text;
-        // 이메일에서 @ 앞부분을 닉네임으로 사용
-        final nickname = email.split('@').first;
-
-        // 유저 정보 업데이트
-        _userStore.updateUser(User(email: email, name: nickname, bio: ''));
-
-        Get.offAll(() => const HomeView());
-      } else {
-        Get.snackbar(
-          '로그인 실패',
-          '비밀번호가 틀렸습니다.',
-          backgroundColor: GlobalColors.darkgrayColor,
-          colorText: GlobalColors.whiteColor,
-        );
-      }
-    });
-  }
-
-  Future<bool> _requestLogin() async {
-    final email = _emailController.text;
-    final password = _passwordController.text;
-
-    // dio, http 패키지를 사용하여 로그인 요청을 보내고 응답을 받음
-
-    return true;
+  Future<void> _login() async {
+    final result = await ApiClient.to
+        .login(_emailController.text, _passwordController.text);
+    if (result == null) {
+      Get.snackbar('로그인 실패', '로그인에 실패 하였습니다.');
+      return;
+    }
+    UserStore.to.updateUser(result);
+    Get.off(() => const HomeView());
   }
 
   /// 입력한 이메일과 비밀번호가 유효한지 확인

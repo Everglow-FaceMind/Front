@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:facemind/utils/user_store.dart';
+import 'package:facemind/view/home/home_view.dart';
 import 'package:get/get.dart';
 import 'package:facemind/view/login/login_view.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +17,7 @@ class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 2), () {
-      Get.off(() => const LoginView());
-    });
+    _checkUserInfo();
   }
 
   @override
@@ -35,5 +35,16 @@ class _SplashViewState extends State<SplashView> {
         ),
       ),
     );
+  }
+
+  Future<void> _checkUserInfo() async {
+    await UserStore.to.loadUserInfo();
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (UserStore.to.currentUser != null) {
+      Get.off(() => const HomeView());
+    } else {
+      Get.off(() => const LoginView());
+    }
   }
 }
