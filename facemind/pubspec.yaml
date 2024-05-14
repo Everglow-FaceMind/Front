@@ -41,6 +41,8 @@ dependencies:
   hexcolor: ^2.0.3
   camera: ^0.10.5+9
   fl_chart: ^0.67.0
+  http: ^1.2.1
+  shared_preferences: ^2.2.3
 
 
 dev_dependencies:
