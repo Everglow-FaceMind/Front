@@ -6,8 +6,11 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:convert';
 
+import 'model/daily_journal_data.dart';
 import 'model/enum.dart';
 import 'model/home_calendar_response.dart';
+import 'model/journal_details.dart';
+import 'model/statistics_data.dart';
 import 'model/user_token.dart';
 
 const String kBaseUrl =
@@ -145,6 +148,222 @@ class ApiClient {
 
       if (response.statusCode == 200) {
         return HomeCalendarData.fromJson(json.decode(response.body));
+      } else {
+        debugPrint('Error: ${response.body})');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  /// 통계 데이터 가져오는 부분
+  /// [date] 요청할 날짜
+  Future<StatisticsData?> fetchStatistics(DateTime date) async {
+    // Access token이 없으면 null을 반환!
+    if (accessToken == null) {
+      return null;
+    }
+
+    var queryParams = {
+      'date': DateFormat('yyyy-MM-dd').format(date),
+    };
+    var uri =
+        Uri.parse('$baseUrl/statistics').replace(queryParameters: queryParams);
+    try {
+      var response = await httpClient.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return StatisticsData.fromJson(json.decode(response.body));
+      } else {
+        debugPrint('Error: ${response.body})');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  /// 일기 작성!
+  /// 작성할때 result ID값이 어떤 값인지 확인이 필요함!!
+  ///
+  /// [emotion] 감정 리스트 (필수)
+  /// [reason] 이유 리스트 (필수)
+  /// [note] 메모 (선택) 내용이 없는 경우 null
+  ///
+  /// 작성 성공시 일기 ID 반환
+  Future<int?> writeJournal({
+    required int resultId,
+    required List<String> emotion,
+    required List<String> reason,
+    String? note,
+  }) async {
+    // Access token이 없으면 null을 반환
+    if (accessToken == null) {
+      return null;
+    }
+    var uri = Uri.parse('$baseUrl/journals/$resultId');
+    try {
+      var response = await httpClient.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: {
+          'emotion': emotion,
+          'cause': reason,
+          'note': note,
+        },
+      );
+
+      final result = json.decode(response.body);
+      if (response.statusCode == 200) {
+        return result['journalId'];
+      } else {
+        debugPrint('Error: ${response.body})');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  /// 일기 수정하는 부분
+  /// [journalId] 수정할 일기 ID
+  /// [emotion] 감정 리스트 (필수)
+  /// [cause] 이유 리스트 (필수)
+  /// [note] 메모 (선택) 내용이 없는 경우 null
+  ///
+  /// 수정 성공시 true 반환
+  Future<bool> updateJournal({
+    required String journalId,
+    required List<String> emotion,
+    required List<String> cause,
+    String? note,
+  }) async {
+    if (accessToken == null) {
+      return false;
+    }
+    var uri = Uri.parse('$baseUrl/journals/$journalId');
+    try {
+      var response = await httpClient.patch(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode({
+          'emotion': emotion,
+          'cause': cause,
+          'note': note,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        return responseData['message'] != null;
+      } else {
+        debugPrint('Error: ${response.body})');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return false;
+    }
+  }
+
+  /// 일기 삭제
+  /// [journalId] 삭제할 일기 ID
+  /// 삭제 성공시 true 반환
+  Future<bool> deleteJournal(String journalId) async {
+    // Access token이 없으면 null을 반환
+    if (accessToken == null) {
+      return false;
+    }
+    var uri = Uri.parse('$baseUrl/journals/$journalId');
+    try {
+      var response = await httpClient.delete(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        return responseData['message'] != null;
+      } else {
+        debugPrint('Error: ${response.body})');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return false;
+    }
+  }
+
+  /// 일기 상세 정보
+  /// [journalId] 일기 ID
+  ///
+  /// 성공시 JournalDetails 반환
+  Future<JournalDetails?> fetchJournalDetails(String journalId) async {
+    if (accessToken == null) {
+      return null;
+    }
+    var uri = Uri.parse('$baseUrl/journals/$journalId');
+    try {
+      var response = await httpClient.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return JournalDetails.fromJson(json.decode(response.body));
+      } else {
+        debugPrint('Error: ${response.body})');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: ${e.toString()})');
+      return null;
+    }
+  }
+
+  /// 일기 목록 가져옴
+  ///
+  /// [date] 요청할 날짜
+  Future<DailyJournalData?> fetchDailyJournals(DateTime date) async {
+    var queryParams = {
+      'date': DateFormat('yyyy-MM-dd').format(date),
+    };
+    var uri = Uri.parse('$baseUrl/journals/daily')
+        .replace(queryParameters: queryParams);
+
+    try {
+      var response = await httpClient.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return DailyJournalData.fromJson(json.decode(response.body));
       } else {
         debugPrint('Error: ${response.body})');
         return null;

@@ -1,3 +1,4 @@
+import 'package:facemind/api/api_client.dart';
 import 'package:facemind/view/home/analyze_view.dart';
 import 'package:facemind/view/home/calendar_view.dart';
 import 'package:facemind/view/home/my_page_view.dart';

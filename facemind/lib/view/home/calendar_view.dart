@@ -1,6 +1,10 @@
 import 'package:facemind/api/model/home_calendar_response.dart';
+import 'package:facemind/api/model/enum.dart';
+import 'package:facemind/api/model/user_info.dart';
 import 'package:facemind/model/user_condition.dart';
 import 'package:facemind/utils/user_store.dart';
+import 'package:facemind/view/diary/diary_view.dart';
+import 'package:facemind/view/diary/new_diary.dart';
 import 'package:facemind/view/home/result_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
