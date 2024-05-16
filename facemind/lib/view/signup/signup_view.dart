@@ -423,7 +423,7 @@ class _SignupViewState extends State<SignupView> {
         ));
         Get.offAll(() => const HomeView());
       } else {
-        Get.snackbar('로그인 실패', '로그인 페이지에세 로그인을 시도 해주세요.');
+        Get.snackbar('로그인 실패', '로그인 페이지에서 로그인을 시도 해주세요.');
       }
     }
   }
