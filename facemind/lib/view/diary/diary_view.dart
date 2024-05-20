@@ -250,9 +250,9 @@ class _HomeViewState extends State<HomeView> {
             });
           },
           physics: const NeverScrollableScrollPhysics(),
-          children: const [
+          children: [
             // 통계
-            AnalyzeView(),
+            AnalyzeView(date: DateTime.now()),
             // 캘린더 홈
             CalendarView(),
             // 마이페이지

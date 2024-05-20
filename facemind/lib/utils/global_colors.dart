@@ -7,6 +7,7 @@ class GlobalColors {
   //// dark gray color : 969696
   static HexColor mainColor = HexColor('#A6CA50');
   static HexColor lightgreenColor = HexColor('#D5E63E');
+  static HexColor darkdarkgreenColor = HexColor('#32580F');
   static HexColor darkgreenColor = HexColor('6A9D1A');
 
   ///초록이
