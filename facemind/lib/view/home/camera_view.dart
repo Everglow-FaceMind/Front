@@ -3,10 +3,18 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
+import 'package:facemind/view/home/result_view.dart';
+import 'package:facemind/widgets/appbar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image/image.dart' as imglib;
 
+import '../../model/user_condition.dart';
 import '../../utils/global_colors.dart';
+
+const int kStreamingSecond = 5;
+const int kStreamingFrameDelayMillisecond = 200;
 
 class Assets {
   static String userIcon = 'assets/icon/icon_user.png';
@@ -31,16 +39,26 @@ class _CameraViewState extends State<CameraView> {
   // index: 0 => 후면
   // index: 1 => 전면
   List<CameraDescription>? _cameras = [];
-  CameraController? controller;
-  bool isRecording = false;
+  CameraController? _controller;
+  bool _isStremingImage = false;
 
   // 촬영 진행 상태
-  int progress = 0;
-  // 측정된 심박수
-  int value = 0;
+  int _progress = 0;
 
-  Timer? timer;
-  Uint8List? currentImage;
+  // 현재 측정된 심박수
+  int _value = 0;
+  int _minHeartRate = 0;
+  int _maxHeartRate = 0;
+  int _avgHeartRate = 0;
+
+  // select camera Index
+  int _cameraIndex = 0;
+
+  Timer? _progressTimer;
+  Timer? _frameTimer;
+
+  Uint8List? _frameImage;
+  CameraImage? _bufferCameraImage;
 
   @override
   void initState() {
@@ -51,8 +69,9 @@ class _CameraViewState extends State<CameraView> {
   @override
   void dispose() {
     // 카메라 컨트롤러 해제
-    controller?.dispose();
-    timer?.cancel();
+    _controller?.dispose();
+    _progressTimer?.cancel();
+    _frameTimer?.cancel();
     super.dispose();
   }
 
@@ -62,32 +81,33 @@ class _CameraViewState extends State<CameraView> {
 
     setState(() {
       _cameras = cameras;
-      // 카메라 컨트롤러 초기화
-      controller = CameraController(_cameras![1], ResolutionPreset.max,
-          enableAudio: false);
-      controller!.initialize().then((_) {
-        // 카메라가 작동되지 않을 경우
+      if (_cameras == null || _cameras!.isEmpty) {
+        Get.back();
+        return;
+      }
 
-        // 화면이 아직 있는지 확인
+      final targetCamera = _cameras!.length > 1 ? _cameras![1] : _cameras![0];
+
+      _controller = CameraController(
+        targetCamera,
+        ResolutionPreset.medium,
+        enableAudio: false,
+      );
+
+      _controller!.initialize().then((_) {
         if (!mounted) {
           return;
         }
-        // 카메라가 작동될 경우
-        setState(() {
-          // 코드 작성
-        });
-      })
-          // 카메라 오류 시
-          .catchError((Object e) {
+
+        setState(() {});
+      }).catchError((Object e) {
         if (e is CameraException) {
           switch (e.code) {
             case 'CameraAccessDenied':
               print("CameraController Error : CameraAccessDenied");
-              // Handle access errors here.
               break;
             default:
               print("CameraController Error");
-              // Handle other errors here.
               break;
           }
         }
@@ -97,25 +117,18 @@ class _CameraViewState extends State<CameraView> {
 
   @override
   Widget build(BuildContext context) {
-    // 카메라가 준비되지 않으면 아무것도 띄우지 않음
-    if (controller == null || !controller!.value.isInitialized) {
-      return const Center(
-        child: CircularProgressIndicator(),
+    if (_controller == null || !_controller!.value.isInitialized) {
+      return Center(
+        child: CircularProgressIndicator(
+          color: GlobalColors.mainColor,
+        ),
       );
     }
 
     return Scaffold(
       backgroundColor: GlobalColors.whiteColor,
-      appBar: AppBar(
-        title: const Text('심박수 측정하기'),
-        leading: IconButton(
-          onPressed: () {
-            Get.back();
-          },
-          icon: const Icon(Icons.chevron_left, size: 20),
-          color: GlobalColors.darkgrayColor,
-        ),
-        backgroundColor: GlobalColors.whiteColor,
+      appBar: DefaultAppBar(
+        title: const Text('측정하기'),
       ),
       body: Container(
         padding: const EdgeInsets.all(25.0),
@@ -135,7 +148,7 @@ class _CameraViewState extends State<CameraView> {
                   children: [
                     const Spacer(),
                     Text(
-                      isRecording
+                      _isStremingImage
                           ? '측정 중...\n움직이거나 말하지 마세요'
                           : '얼굴을 가이드 선 영역에 맞추고\n촬영 버튼을 눌러 주세요!',
                       textAlign: TextAlign.center, // 텍스트 중앙 정렬
@@ -148,7 +161,7 @@ class _CameraViewState extends State<CameraView> {
                       width: previewWidth,
                       child: Align(
                         alignment: Alignment.centerRight,
-                        child: isRecording
+                        child: _isStremingImage
                             ? Container(
                                 width: 80,
                                 height: 80,
@@ -158,7 +171,7 @@ class _CameraViewState extends State<CameraView> {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    value.toString(),
+                                    _value.toString(),
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
@@ -166,15 +179,11 @@ class _CameraViewState extends State<CameraView> {
                                   ),
                                 ),
                               )
-                            : SizedBox(
-                                width: 80,
-                                height: 80,
-                                child: InkWell(
-                                  onTap: () {},
-                                  child: Image.asset(
-                                    width: 60,
-                                    Assets.flipCameraIcon,
-                                  ),
+                            : GestureDetector(
+                                onTap: _flipCamera,
+                                child: Image.asset(
+                                  width: 50,
+                                  Assets.flipCameraIcon,
                                 ),
                               ),
                       ),
@@ -188,7 +197,7 @@ class _CameraViewState extends State<CameraView> {
                         child: Stack(
                           children: [
                             Positioned.fill(
-                              child: CameraPreview(controller!),
+                              child: CameraPreview(_controller!),
                             ),
                             Center(
                               child: Image.asset(
@@ -204,13 +213,13 @@ class _CameraViewState extends State<CameraView> {
                     const SizedBox(height: 16),
                     SizedBox(
                       height: 80,
-                      child: isRecording
+                      child: _isStremingImage
                           ? Center(
                               child: SizedBox(
                                 height: 40,
                                 child: LinearProgressIndicator(
                                   minHeight: 80,
-                                  value: progress / 20,
+                                  value: _progress / kStreamingSecond,
                                   backgroundColor: GlobalColors.lightgrayColor,
                                   valueColor: AlwaysStoppedAnimation<Color>(
                                     GlobalColors.mainColor,
@@ -218,15 +227,12 @@ class _CameraViewState extends State<CameraView> {
                                 ),
                               ),
                             )
-                          : InkWell(
+                          : GestureDetector(
                               onTap: () {
-                                setState(() {
-                                  isRecording = true;
-                                });
-                                startTimer();
+                                _startImageStream();
                               },
                               child: Image.asset(
-                                width: 60,
+                                width: 50,
                                 Assets.cameraIcon,
                               ),
                             ),
@@ -235,11 +241,11 @@ class _CameraViewState extends State<CameraView> {
                   ],
                 ),
               ),
-              if (currentImage != null)
+              if (_frameImage != null)
                 Align(
                   alignment: Alignment.topRight,
                   child: Image.memory(
-                    currentImage!,
+                    _frameImage!,
                     width: 40,
                     height: 80,
                     fit: BoxFit.cover,
@@ -253,51 +259,215 @@ class _CameraViewState extends State<CameraView> {
     );
   }
 
-  bool isProcessTakePicture = false;
+  void _flipCamera() {
+    if (_cameras == null || _cameras!.length == 1) {
+      return;
+    }
+    int nextIndex = ++_cameraIndex;
+    if (nextIndex >= _cameras!.length) {
+      nextIndex = 0;
+    }
+    _cameraIndex = nextIndex;
+    _controller?.setDescription(_cameras![nextIndex]);
+  }
 
-  void startTimer() {
-    const oneSec = Duration(milliseconds: 500);
-    timer = Timer.periodic(oneSec, (Timer timer) {
-      if (progress >= 20) {
-        // 나중에 1분으로 타이머 수정
-        timer.cancel();
-        setState(() {
-          isRecording = false;
-          currentImage = null;
-          value = 0;
-        });
+  void _startImageStream() {
+    setState(() {
+      _isStremingImage = true;
+    });
 
-        // Get.off(() => NewDiaryView(
-        //       date: DateTime.now(),
-        //       // controller: null,
-        //       // controller: ,
-        //     ));
-      } else {
-        if (!isProcessTakePicture) {
-          isProcessTakePicture = true;
-          controller?.takePicture().then((XFile file) async {
-            final data = await file.readAsBytes();
-            setState(() {
-              currentImage = data;
-            });
-            sendImageToServer(data);
-            print(data.length);
-            isProcessTakePicture = false;
-          });
+    if (!kIsWeb) {
+      _controller?.startImageStream((CameraImage image) {
+        if (!context.mounted) {
+          return;
+        }
+        _bufferCameraImage = image;
+      });
+    }
+
+    const oneSec = Duration(seconds: 1);
+    _progressTimer = Timer.periodic(oneSec, (Timer timer) {
+      if (_progress >= kStreamingSecond) {
+        _progressTimer?.cancel();
+        _frameTimer?.cancel();
+
+        if (!kIsWeb) {
+          _controller?.stopImageStream();
         }
 
+        _progressTimer = null;
+        _frameTimer = null;
+
+        _isStremingImage = false;
+        _frameImage = null;
+
+        Get.off(
+          () => ResultView(
+            userCondition: UserCondition(
+              date: DateTime.now(),
+              maxHeartRate: _maxHeartRate,
+              minHeartRate: _minHeartRate,
+              avgHeartRate: _avgHeartRate,
+              stressLevel: _calculateStressIndex(
+                _minHeartRate,
+                _maxHeartRate,
+                _avgHeartRate,
+              ),
+            ),
+          ),
+        );
+      } else {
         setState(() {
-          progress++;
+          _progress++;
         });
       }
     });
+
+    _frameTimer = Timer.periodic(
+        const Duration(milliseconds: kStreamingFrameDelayMillisecond), (timer) {
+      _streamImageToServer(_bufferCameraImage);
+    });
   }
 
-  Future<void> sendImageToServer(Uint8List data) async {
-    // 서버로 이미지 전송하는 부분
-    // 서버에 이미지 전송 후 value를 업데이트 하여 유아이 표시
-    setState(() {
-      value = Random().nextInt(100);
-    });
+  Future<void> _streamImageToServer(CameraImage? cameraImage) async {
+    if (cameraImage != null) {
+      switch (cameraImage.format.group) {
+        case ImageFormatGroup.bgra8888:
+          _frameImage = await _convertBGRA8888ToImage(cameraImage);
+          break;
+        case ImageFormatGroup.yuv420:
+          _frameImage = await _convertYUV420toImage(cameraImage);
+          break;
+        case ImageFormatGroup.nv21:
+          _frameImage = await _convertNV21toImage(cameraImage);
+          break;
+        case ImageFormatGroup.jpeg:
+          _frameImage = await _processJPEGImage(cameraImage);
+          break;
+        case ImageFormatGroup.unknown:
+          break;
+      }
+    }
+
+    _value = Random().nextInt(100);
+
+    if (_minHeartRate == 0 || _minHeartRate > _value) {
+      _minHeartRate = _value;
+    }
+    if (_maxHeartRate == 0 || _maxHeartRate < _value) {
+      _maxHeartRate = _value;
+    }
+    _avgHeartRate = (_avgHeartRate + _value) ~/ 2;
+
+    if (context.mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<Uint8List> _processJPEGImage(CameraImage image) async {
+    return Uint8List.fromList(image.planes.first.bytes);
+  }
+
+  Future<Uint8List> _convertYUV420toImage(CameraImage cameraImage) async {
+    final int width = cameraImage.width;
+    final int height = cameraImage.height;
+    final int uvRowStride = cameraImage.planes[1].bytesPerRow;
+    final int uvPixelStride = cameraImage.planes[1].bytesPerPixel!;
+
+    var img = imglib.Image(
+      width: width,
+      height: height,
+    );
+
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        final int uvIndex =
+            uvPixelStride * (x / 2).floor() + uvRowStride * (y / 2).floor();
+        final int index = y * width + x;
+        final yp = cameraImage.planes[0].bytes[index];
+        final up = cameraImage.planes[1].bytes[uvIndex];
+        final vp = cameraImage.planes[2].bytes[uvIndex];
+
+        var r = yp + vp * 1436 / 1024 - 179;
+        var g = yp - up * 46549 / 131072 + 44 - vp * 93604 / 131072 + 91;
+        var b = yp + up * 1814 / 1024 - 227;
+
+        final red = r.clamp(0, 255).toInt();
+        final green = g.clamp(0, 255).toInt();
+        final blue = b.clamp(0, 255).toInt();
+        img.data?.setPixelRgbSafe(x, y, red, green, blue);
+      }
+    }
+    imglib.PngEncoder pngEncoder = imglib.PngEncoder(level: 0);
+    final png = pngEncoder.encode(img);
+    return png;
+  }
+
+  Future<Uint8List> _convertBGRA8888ToImage(CameraImage cameraImage) async {
+    final img = imglib.Image.fromBytes(
+      width: cameraImage.planes[0].width!,
+      height: cameraImage.planes[0].height!,
+      bytes: cameraImage.planes[0].bytes.buffer,
+      order: imglib.ChannelOrder.bgra,
+    );
+    imglib.PngEncoder pngEncoder = imglib.PngEncoder(level: 0);
+    final png = pngEncoder.encode(img);
+    return png;
+  }
+
+  Future<Uint8List> _convertNV21toImage(CameraImage image) async {
+    final int width = image.width;
+    final int height = image.height;
+    // YUV -> RGB 변환을 위한 빈 imglib 이미지 생성
+    var img = imglib.Image(
+      width: width,
+      height: height,
+    );
+    final int uvWidth = width ~/ 2;
+    final int uvHeight = height ~/ 2;
+
+    final yPlane = image.planes[0];
+    final uvPlane = image.planes[1];
+    final yBuffer = yPlane.bytes;
+    final uvBuffer = uvPlane.bytes;
+    final uvRowStride = uvPlane.bytesPerRow;
+    final uvPixelStride = uvPlane.bytesPerPixel!;
+
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        final uvIndex = uvPixelStride * (x ~/ 2) + uvRowStride * (y ~/ 2);
+        final yIndex = y * yPlane.bytesPerRow + x;
+
+        final Y = yBuffer[yIndex];
+        final V = uvBuffer[uvIndex + 0];
+        final U = uvBuffer[uvIndex + 1];
+
+        var r = Y + 1.402 * (V - 128);
+        var g = Y - 0.344136 * (U - 128) - 0.714136 * (V - 128);
+        var b = Y + 1.772 * (U - 128);
+
+        final red = r.clamp(0, 255).toInt();
+        final green = g.clamp(0, 255).toInt();
+        final blue = b.clamp(0, 255).toInt();
+
+        img.data?.setPixelRgbSafe(x, y, red, green, blue);
+      }
+    }
+
+    imglib.PngEncoder pngEncoder = imglib.PngEncoder(level: 0);
+    final png = pngEncoder.encode(img);
+    return png;
+  }
+
+  double _calculateStressIndex(
+      int minHeartRate, int maxHeartRate, int avgHeartRate) {
+    double stressContributionFromMax = maxHeartRate * 0.1;
+    double stressContributionFromAvg = avgHeartRate * 0.05;
+    double rawStressIndex =
+        stressContributionFromMax + stressContributionFromAvg;
+    double normalizedStressIndex = (rawStressIndex / 1000) * 40;
+    double stressIndexWithMin = normalizedStressIndex + 15;
+    double finalStressIndex = stressIndexWithMin > 40 ? 40 : stressIndexWithMin;
+    return double.parse(finalStressIndex.toStringAsFixed(2));
   }
 }

@@ -1,11 +1,12 @@
+import 'package:facemind/api/api_client.dart';
 import 'package:facemind/model/user_condition.dart';
 import 'package:facemind/utils/global_colors.dart';
-import 'package:facemind/view/diary/new_diary.dart';
+import 'package:facemind/view/diary/diary_editor_view.dart';
 import 'package:facemind/view/home/home_view.dart';
 import 'package:facemind/widgets/button_global.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import '../../utils/double_extension.dart';
 
 class Assets {
   static String resultImg = 'assets/Images/resultImg.png';
@@ -24,197 +25,216 @@ class ResultView extends StatefulWidget {
 }
 
 class _ResultViewState extends State<ResultView> {
+  late final UserCondition userCondition = widget.userCondition;
+  int? resultId;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      sendResult();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: GlobalColors.whiteColor,
-      body: Container(
-        padding: const EdgeInsets.only(
-            top: 65.0, right: 35.0, left: 35.0, bottom: 35.0),
-        child: Column(
-          children: [
-            _headerView(),
-            Expanded(child: _bodyView(context, widget.userCondition)),
-            _bottomButtonView(context),
-          ],
+    return Container(
+      color: GlobalColors.whiteColor,
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: GlobalColors.whiteColor,
+          body: Container(
+            padding:
+                const EdgeInsets.only(right: 35.0, left: 35.0, bottom: 35.0),
+            child: Column(
+              children: [
+                _header(),
+                const SizedBox(height: 30),
+                Expanded(
+                  child: _bodyView(context, widget.userCondition),
+                ),
+                _bottomButtonView(context, userCondition)
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
-}
 
-Widget _headerView() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Container(
-        padding: const EdgeInsets.only(left: 5),
-        child: const Text(
-          '측정 결과',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w400,
+  Future<void> sendResult() async {
+    resultId = await ApiClient.to.writeResult(userCondition);
+  }
+
+  Widget _header() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.only(left: 5),
+          child: const Text(
+            '측정 결과',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.w400,
+            ),
           ),
         ),
-      ),
-      Divider(
-        //구분선
-        height: 10.0,
-        color: Colors.grey[500],
-        thickness: 0.8,
-      ),
-    ],
-  );
-}
-
-Widget _heartView(BuildContext context, UserCondition userCondition) {
-  return Container(
-    height: 200,
-    decoration: BoxDecoration(
-      color: GlobalColors.subBgColor,
-      borderRadius: BorderRadius.circular(16),
-    ),
-    padding: const EdgeInsets.all(15),
-    child: Column(
-      children: [
-        Text(
-          '심박수',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _displayStat(userCondition),
-            Image.asset(
-              width: 100,
-              Assets.resultImg,
-            ),
-          ],
+        Divider(
+          height: 10.0,
+          color: Colors.grey[500],
+          thickness: 0.8,
         ),
       ],
-    ),
-  );
-}
+    );
+  }
 
-Widget _stressView(BuildContext context, UserCondition userCondition) {
-  return Container(
-    height: 200,
-    decoration: BoxDecoration(
-      color: GlobalColors.subBgColor,
-      borderRadius: BorderRadius.circular(16),
-    ),
-    padding: const EdgeInsets.all(15),
-    child: Column(
+  Widget _bodyView(BuildContext context, UserCondition userCondition) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 30),
+          _heartView(context, userCondition),
+          const SizedBox(height: 30),
+          _stressView(context, userCondition),
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _bottomButtonView(BuildContext context, UserCondition userCondition) {
+    return Column(
       children: [
-        Text(
-          '스트레스지수',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const Spacer(),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              userCondition.emoji,
-              style: TextStyle(
-                fontSize: 60,
-                color: GlobalColors.darkgrayColor,
+        ButtonGlobal(
+          text: '일기 작성하기',
+          onPressed: () {
+            if (resultId == null) {
+              return;
+            }
+            Get.off(
+              () => DiaryEditorView.createWriteMode(
+                date: userCondition.date,
+                userCondition: userCondition,
+                resultId: resultId!,
               ),
-            ),
-            _displayStress(userCondition),
-          ],
+            );
+          },
+          buttonColor: GlobalColors.mainColor,
         ),
-        const Spacer(),
+        const SizedBox(
+          height: 15,
+        ),
+        ButtonGlobal(
+          text: '홈으로',
+          onPressed: () {
+            Get.to(() => const HomeView());
+          },
+          buttonColor: GlobalColors.darkgrayColor,
+        ),
       ],
-    ),
-  );
-}
+    );
+  }
 
-Widget _bodyView(BuildContext context, UserCondition userCondition) {
-  return SingleChildScrollView(
-    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const SizedBox(height: 40),
-      _heartView(context, userCondition),
-      const SizedBox(
-        height: 40,
+  Widget _stressView(BuildContext context, UserCondition userCondition) {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        color: GlobalColors.subBgColor,
+        borderRadius: BorderRadius.circular(16),
       ),
-      _stressView(context, userCondition),
-      const SizedBox(
-        height: 50,
+      padding: const EdgeInsets.all(15),
+      child: Column(
+        children: [
+          Text(
+            '스트레스지수',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                userCondition.stressLevel.emoji,
+                style: TextStyle(
+                  fontSize: 60,
+                  color: GlobalColors.darkgrayColor,
+                ),
+              ),
+              _displayStress(userCondition),
+            ],
+          ),
+          const Spacer(),
+        ],
       ),
-    ]),
-  );
-}
+    );
+  }
 
-Widget _bottomButtonView(BuildContext context) {
-  return Column(
-    children: [
-      ButtonGlobal(
-        text: '일기 작성하기',
-        onPressed: () {
-          Get.to(NewDiaryView(
-            date: DateTime.now(),
-            userCondition: UserCondition(
-              date: DateTime.now(),
-              stressLevel: 20,
-              maxHeartRate: 100,
-              minHeartRate: 12,
-              avgHeartRate: 50,
-            ),
-            // controller: null,
-          ));
-        },
-        buttonColor: GlobalColors.mainColor,
+  Widget _heartView(BuildContext context, UserCondition userCondition) {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        color: GlobalColors.subBgColor,
+        borderRadius: BorderRadius.circular(16),
       ),
-      const SizedBox(
-        height: 15,
+      padding: const EdgeInsets.all(15),
+      child: Column(
+        children: [
+          Text(
+            '심박수',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _displayStat(userCondition),
+              Image.asset(
+                width: 100,
+                Assets.resultImg,
+              ),
+            ],
+          ),
+        ],
       ),
-      ButtonGlobal(
-        text: '홈으로',
-        onPressed: () {
-          Get.to(() => const HomeView());
-        },
-        buttonColor: GlobalColors.darkgrayColor,
-      ),
-    ],
-  );
-}
+    );
+  }
 
-Widget _displayStat(UserCondition userCondition) {
-  final avgHeartRate = userCondition.avgHeartRate;
-  final maxHeartRate = userCondition.maxHeartRate;
-  final minHeartRate = userCondition.minHeartRate;
+  Widget _displayStat(UserCondition userCondition) {
+    final avgHeartRate = userCondition.avgHeartRate;
+    final maxHeartRate = userCondition.maxHeartRate;
+    final minHeartRate = userCondition.minHeartRate;
 
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        '평균 ${avgHeartRate.toString()}',
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-        textAlign: TextAlign.left,
-      ),
-      Text(
-        '최고 ${maxHeartRate.toString()}',
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-        textAlign: TextAlign.left,
-      ),
-      Text(
-        '최저 ${minHeartRate.toString()}',
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-        textAlign: TextAlign.left,
-      ),
-    ],
-  );
-}
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '평균 ${avgHeartRate.toString()}',
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          textAlign: TextAlign.left,
+        ),
+        Text(
+          '최고 ${maxHeartRate.toString()}',
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          textAlign: TextAlign.left,
+        ),
+        Text(
+          '최저 ${minHeartRate.toString()}',
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          textAlign: TextAlign.left,
+        ),
+      ],
+    );
+  }
 
-Widget _displayStress(UserCondition userCondition) {
-  final stressLevel = userCondition.stressLevel;
-
-  return Text(
-    stressLevel.toString(),
-    style: const TextStyle(fontSize: 50, fontWeight: FontWeight.w500),
-    textAlign: TextAlign.left,
-  );
+  Widget _displayStress(UserCondition userCondition) {
+    final stressLevel = userCondition.stressLevel;
+    return Text(
+      stressLevel.toString(),
+      style: const TextStyle(fontSize: 50, fontWeight: FontWeight.w500),
+      textAlign: TextAlign.left,
+    );
+  }
 }

@@ -15,9 +15,11 @@ class DailyJournalData {
     return DailyJournalData(
       date: json['date'],
       dayOfTheWeek: json['dayOfTheWeek'],
-      journals: (json['journals'] as List)
-          .map((i) => JournalEntry.fromJson(i))
-          .toList(),
+      journals: json['journals'] != null
+          ? (json['journals'] as List)
+              .map((i) => JournalEntry.fromJson(i))
+              .toList()
+          : [],
     );
   }
 }
@@ -27,7 +29,7 @@ class JournalEntry {
   final int heartRateMin;
   final int heartRateMax;
   final int heartRateAvg;
-  final int stressLevel;
+  final double stressRate;
   final JournalDetails? journalDetail;
 
   JournalEntry({
@@ -35,7 +37,7 @@ class JournalEntry {
     required this.heartRateMin,
     required this.heartRateMax,
     required this.heartRateAvg,
-    required this.stressLevel,
+    required this.stressRate,
     this.journalDetail,
   });
 
@@ -45,7 +47,7 @@ class JournalEntry {
       heartRateMin: json['heartRateMin'],
       heartRateMax: json['heartRateMax'],
       heartRateAvg: json['heartRateAvg'],
-      stressLevel: json['stressLevel'],
+      stressRate: json['stressRate'],
       journalDetail: json['journalDetail'] != null
           ? JournalDetails.fromJson(json['journalDetail'])
           : null,

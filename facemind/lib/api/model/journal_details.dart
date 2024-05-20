@@ -6,7 +6,7 @@ class JournalDetails {
   final int? heartRateMin;
   final int? heartRateMax;
   final int? heartRateAvg;
-  final int? stressLevel;
+  final double? stressLevel;
   final List<String>? emotion;
   final List<String>? cause;
   final String? note;
@@ -34,7 +34,7 @@ class JournalDetails {
       heartRateMin: json['heartRateMin'],
       heartRateMax: json['heartRateMax'],
       heartRateAvg: json['heartRateAvg'],
-      stressLevel: json['stressLevel'],
+      stressLevel: json['stressRate'],
       emotion:
           json['emotion'] != null ? List<String>.from(json['emotion']) : null,
       cause: json['cause'] != null ? List<String>.from(json['cause']) : null,

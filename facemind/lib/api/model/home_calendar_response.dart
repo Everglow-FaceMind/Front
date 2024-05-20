@@ -24,7 +24,7 @@ class HomeCalendarData {
 
 class CalendarResult {
   final String date;
-  final int stressRate;
+  final double stressRate;
 
   CalendarResult({required this.date, required this.stressRate});
 

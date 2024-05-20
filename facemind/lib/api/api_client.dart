@@ -1,5 +1,7 @@
 import 'package:facemind/api/model/user_info.dart';
+import 'package:facemind/model/user_condition.dart';
 import 'package:facemind/utils/user_store.dart';
+import 'package:facemind/view/login/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -82,12 +84,10 @@ class ApiClient {
       );
 
       if (response.statusCode == 200) {
-        final token = UserToken.fromJson(jsonDecode(response.body));
-        // 현재 API에 유저 데이터를 받아오는 부분이 없어서 임시
-        return UserInfo(
-          email: email,
-          token: token,
-        );
+        final responseBody = jsonDecode(response.body); // Map<String, dynamic>
+        final token = UserToken.fromJson(responseBody['tokenInfo']);
+        final userInfo = UserInfo.fromJson(responseBody['memberInfo']);
+        return userInfo.copyWith(token: token);
       } else {
         return null;
       }
@@ -148,6 +148,13 @@ class ApiClient {
 
       if (response.statusCode == 200) {
         return HomeCalendarData.fromJson(json.decode(response.body));
+      } else if (response.statusCode == 401) {
+        if (await refreshUpdateAccessToken()) {
+          return fetchHomeData(date: date, sort: sort);
+        } else {
+          Get.offAll(() => const LoginView());
+          return null;
+        }
       } else {
         debugPrint('Error: ${response.body})');
         return null;
@@ -182,6 +189,13 @@ class ApiClient {
 
       if (response.statusCode == 200) {
         return StatisticsData.fromJson(json.decode(response.body));
+      } else if (response.statusCode == 401) {
+        if (await refreshUpdateAccessToken()) {
+          return fetchStatistics(date);
+        } else {
+          Get.offAll(() => const LoginView());
+          return null;
+        }
       } else {
         debugPrint('Error: ${response.body})');
         return null;
@@ -218,16 +232,28 @@ class ApiClient {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
         },
-        body: {
-          'emotion': emotion,
+        body: jsonEncode({
+          'emotions': emotion,
           'cause': reason,
           'note': note,
-        },
+        }),
       );
 
       final result = json.decode(response.body);
       if (response.statusCode == 200) {
         return result['journalId'];
+      } else if (response.statusCode == 401) {
+        if (await refreshUpdateAccessToken()) {
+          return writeJournal(
+            resultId: resultId,
+            emotion: emotion,
+            reason: reason,
+          );
+        } else {
+          Get.offAll(() => const LoginView());
+
+          return null;
+        }
       } else {
         debugPrint('Error: ${response.body})');
         return null;
@@ -263,7 +289,7 @@ class ApiClient {
           'Authorization': 'Bearer $accessToken',
         },
         body: jsonEncode({
-          'emotion': emotion,
+          'emotions': emotion,
           'cause': cause,
           'note': note,
         }),
@@ -272,6 +298,19 @@ class ApiClient {
       if (response.statusCode == 200) {
         var responseData = json.decode(response.body);
         return responseData['message'] != null;
+      } else if (response.statusCode == 401) {
+        if (await refreshUpdateAccessToken()) {
+          return updateJournal(
+            journalId: journalId,
+            emotion: emotion,
+            cause: cause,
+            note: note,
+          );
+        } else {
+          Get.offAll(() => const LoginView());
+
+          return false;
+        }
       } else {
         debugPrint('Error: ${response.body})');
         return false;
@@ -303,6 +342,13 @@ class ApiClient {
       if (response.statusCode == 200) {
         var responseData = json.decode(response.body);
         return responseData['message'] != null;
+      } else if (response.statusCode == 401) {
+        if (await refreshUpdateAccessToken()) {
+          return deleteJournal(journalId);
+        } else {
+          Get.offAll(() => const LoginView());
+          return false;
+        }
       } else {
         debugPrint('Error: ${response.body})');
         return false;
@@ -333,6 +379,13 @@ class ApiClient {
 
       if (response.statusCode == 200) {
         return JournalDetails.fromJson(json.decode(response.body));
+      } else if (response.statusCode == 401) {
+        if (await refreshUpdateAccessToken()) {
+          return fetchJournalDetails(journalId);
+        } else {
+          Get.offAll(() => const LoginView());
+          return null;
+        }
       } else {
         debugPrint('Error: ${response.body})');
         return null;
@@ -364,6 +417,14 @@ class ApiClient {
 
       if (response.statusCode == 200) {
         return DailyJournalData.fromJson(json.decode(response.body));
+      } else if (response.statusCode == 401) {
+        if (await refreshUpdateAccessToken()) {
+          return fetchDailyJournals(date);
+        } else {
+          Get.offAll(() => const LoginView());
+
+          return null;
+        }
       } else {
         debugPrint('Error: ${response.body})');
         return null;
@@ -371,6 +432,78 @@ class ApiClient {
     } catch (e) {
       debugPrint('Error: $e');
       return null;
+    }
+  }
+
+  /// 측정 결과를 서버에 보내서 저장
+  /// [condition] 측정 결과
+  ///
+  /// 성공시 resultId를 반환
+  Future<int?> writeResult(UserCondition condition) async {
+    // Access token이 없으면 null을 반환
+    if (accessToken == null) {
+      return null;
+    }
+    var uri = Uri.parse('$baseUrl/result/test');
+    try {
+      var response = await httpClient.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+        body: jsonEncode({
+          "date": DateFormat('yyyy-MM-dd').format(condition.date),
+          "time": DateFormat('HH:mm:ss').format(condition.date),
+          "heartRateMin": condition.minHeartRate,
+          "heartRateMax": condition.maxHeartRate,
+          "heartRateAvg": condition.avgHeartRate,
+          "stressRate": condition.stressLevel.toInt(),
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final result = json.decode(response.body);
+        return result['resultId'];
+      } else if (response.statusCode == 401) {
+        if (await refreshUpdateAccessToken()) {
+          return writeResult(condition);
+        } else {
+          Get.offAll(() => const LoginView());
+          return null;
+        }
+      } else {
+        debugPrint('Error: ${response.body})');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('Error: $e');
+      return null;
+    }
+  }
+
+  Future<bool> refreshUpdateAccessToken() async {
+    final userStore = Get.find<UserStore>();
+    final currentUser = userStore.currentUser;
+    if (currentUser == null) {
+      return false;
+    }
+
+    final newToken = await refreshToken(
+      currentUser.token?.accessToken ?? '',
+      currentUser.token?.refreshToken ?? '',
+    );
+
+    if (newToken != null) {
+      await userStore.updateUser(
+        currentUser.copyWith(token: newToken),
+      );
+      return true;
+    } else {
+      await userStore.updateUser(
+        currentUser.copyWith(token: null),
+      );
+      return false;
     }
   }
 

@@ -1,18 +1,22 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:facemind/api/model/enum.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/global_colors.dart';
 
-class Dropdown extends StatefulWidget {
-  const Dropdown({
+class SortDropdown extends StatefulWidget {
+  final void Function(SortType) onChanged;
+
+  const SortDropdown({
     super.key,
+    required this.onChanged,
   });
 
   @override
-  State<Dropdown> createState() => _DropdownState();
+  State<SortDropdown> createState() => _SortDropdownState();
 }
 
-class _DropdownState extends State<Dropdown> {
+class _SortDropdownState extends State<SortDropdown> {
   final List<String> items = [
     '높은 순',
     '낮은 순',
@@ -53,6 +57,9 @@ class _DropdownState extends State<Dropdown> {
                 setState(() {
                   selectedValue = value;
                 });
+                widget.onChanged(
+                  value == '높은 순' ? SortType.max : SortType.min,
+                );
               },
               buttonStyleData: const ButtonStyleData(
                 padding: EdgeInsets.symmetric(horizontal: 16),

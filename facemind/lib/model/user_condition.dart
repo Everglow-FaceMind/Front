@@ -1,4 +1,4 @@
-/// 측정 컨디션 정보를 담는 모델 클래스(임시)
+/// 측정 컨디션 정보를 담는 모델 클래스
 class UserCondition {
   // 측정 날짜
   DateTime date;
@@ -7,7 +7,14 @@ class UserCondition {
   final int maxHeartRate;
   final int minHeartRate;
   final int avgHeartRate;
-  final int stressLevel; // Min: 0, Max: 100??
+
+  /// 스트레스 level 별 지수
+  /// Lv1. 5~12
+  /// Lv2. 12.1~19
+  /// Lv3. 19.1~26
+  /// Lv4. 26.1~33
+  /// Lv5. 33.1~40
+  final double stressLevel;
 
   UserCondition({
     required this.date,
@@ -16,19 +23,4 @@ class UserCondition {
     this.avgHeartRate = 0,
     this.stressLevel = 0,
   });
-
-  /// 스트레스 레벨에 따라 이모지를 반환하는 함수
-  String get emoji {
-    if (stressLevel < 20) {
-      return '\u{1F606}';
-    } else if (stressLevel < 40) {
-      return '\u{1F603}';
-    } else if (stressLevel < 60) {
-      return '\u{1F614}';
-    } else if (stressLevel < 80) {
-      return '\u{1F616}';
-    } else {
-      return '\u{1F621}';
-    }
-  }
 }
