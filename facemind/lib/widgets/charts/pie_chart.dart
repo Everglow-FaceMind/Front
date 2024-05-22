@@ -2,16 +2,22 @@ import 'package:facemind/utils/global_colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../../api/model/statistics_data.dart';
+
 class PieChartSample2 extends StatefulWidget {
-  const PieChartSample2({super.key});
+  List<StressLevelDetail> stressLevel;
+
+  PieChartSample2({
+    super.key,
+    required this.stressLevel,
+  });
 
   @override
-  State<StatefulWidget> createState() => PieChart2State();
+  State<PieChartSample2> createState() => PieChart2State();
 }
 
-class PieChart2State extends State {
+class PieChart2State extends State<PieChartSample2> {
   int touchedIndex = -1;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -120,74 +126,41 @@ class PieChart2State extends State {
   }
 
   List<PieChartSectionData> showingSections() {
-    return List.generate(5, (i) {
+    final List<StressLevelDetail> stressLevel = widget.stressLevel;
+
+    return List.generate(stressLevel.length, (i) {
       final isTouched = i == touchedIndex;
       final fontSize = isTouched ? 17.0 : 13.0;
       final radius = isTouched ? 55.0 : 50.0;
-      switch (i) {
-        case 0:
-          return PieChartSectionData(
-            color: GlobalColors.lightgreenColor,
-            value: 40,
-            title: '40%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          );
+
+      Color backgroundColor = GlobalColors.darkgrayColor;
+
+      switch (stressLevel[i].level) {
         case 1:
-          return PieChartSectionData(
-            color: GlobalColors.mainColor,
-            value: 30,
-            title: '30%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          );
+          backgroundColor = GlobalColors.lightgreenColor;
         case 2:
-          return PieChartSectionData(
-            color: GlobalColors.darkgreenColor,
-            value: 15,
-            title: '15%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          );
+          backgroundColor = GlobalColors.mainColor;
         case 3:
-          return PieChartSectionData(
-            color: GlobalColors.darkdarkgreenColor,
-            value: 10,
-            title: '10%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          );
+          backgroundColor = GlobalColors.darkgreenColor;
         case 4:
-          return PieChartSectionData(
-            color: GlobalColors.darkgrayColor,
-            value: 5,
-            title: '5%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          );
+          backgroundColor = GlobalColors.darkdarkgreenColor;
+        case 5:
+          backgroundColor = GlobalColors.darkgrayColor;
         default:
           throw Error();
       }
+
+      return PieChartSectionData(
+        color: backgroundColor,
+        value: stressLevel[i].percentage.toDouble(),
+        title: '${stressLevel[i].percentage}%',
+        radius: radius,
+        titleStyle: TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      );
     });
   }
 }

@@ -2,8 +2,14 @@ import 'package:facemind/utils/global_colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../../api/model/statistics_data.dart';
+
 // LineChart를 구현하는 위젯입니다.
 class _LineChart extends StatelessWidget {
+  List<HeartRateDetail> heartRate;
+
+  _LineChart(this.heartRate);
+
   @override
   Widget build(BuildContext context) {
     return LineChart(
@@ -160,15 +166,14 @@ class _LineChart extends StatelessWidget {
   // 라인 차트 바 데이터를 정의하는 메서드입니다.
   List<LineChartBarData> get lineBarsData => [
         LineChartBarData(
-          spots: [
-            FlSpot(1, 80),
-            FlSpot(2, 95),
-            FlSpot(3, 110),
-            FlSpot(4, 125),
-            FlSpot(5, 140),
-            FlSpot(6, 135),
-            FlSpot(7, 120),
-          ],
+          spots: heartRate.map(
+            (e) {
+              return FlSpot(
+                heartRate.indexOf(e).toDouble() + 1,
+                e.heartRateMin.toDouble(),
+              );
+            },
+          ).toList(),
           isCurved: true,
           color: GlobalColors.darkgrayColor,
           barWidth: 4,
@@ -177,15 +182,14 @@ class _LineChart extends StatelessWidget {
           dotData: const FlDotData(show: false),
         ),
         LineChartBarData(
-          spots: [
-            FlSpot(1, 120),
-            FlSpot(2, 130),
-            FlSpot(3, 125),
-            FlSpot(4, 135),
-            FlSpot(5, 140),
-            FlSpot(6, 130),
-            FlSpot(7, 125),
-          ],
+          spots: heartRate.map(
+            (e) {
+              return FlSpot(
+                heartRate.indexOf(e).toDouble() + 1,
+                e.heartRateMax.toDouble(),
+              );
+            },
+          ).toList(),
           isCurved: true,
           color: GlobalColors.mainColor,
           barWidth: 4,
@@ -199,7 +203,11 @@ class _LineChart extends StatelessWidget {
 
 // LineChartSample1을 구현하는 StatelessWidget입니다.
 class LineChartSample1 extends StatelessWidget {
-  const LineChartSample1({super.key});
+  List<HeartRateDetail> heartRate;
+  LineChartSample1({
+    super.key,
+    required this.heartRate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -230,7 +238,7 @@ class LineChartSample1 extends StatelessWidget {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(right: 6, left: 6),
-                  child: _LineChart(),
+                  child: _LineChart(heartRate),
                 ),
               ),
               const SizedBox(
