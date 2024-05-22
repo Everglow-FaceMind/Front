@@ -84,7 +84,8 @@ class ApiClient {
       );
 
       if (response.statusCode == 200) {
-        final responseBody = jsonDecode(response.body); // Map<String, dynamic>
+        final responseBody =
+            jsonDecode(_uft8Convert(response.body)); // Map<String, dynamic>
         final token = UserToken.fromJson(responseBody['tokenInfo']);
         final userInfo = UserInfo.fromJson(responseBody['memberInfo']);
         return userInfo.copyWith(token: token);
@@ -110,7 +111,7 @@ class ApiClient {
       );
 
       if (response.statusCode == 200) {
-        return UserToken.fromJson(json.decode(response.body));
+        return UserToken.fromJson(json.decode(_uft8Convert(response.body)));
       } else {
         return null;
       }
@@ -147,7 +148,8 @@ class ApiClient {
       );
 
       if (response.statusCode == 200) {
-        return HomeCalendarData.fromJson(json.decode(response.body));
+        return HomeCalendarData.fromJson(
+            json.decode(_uft8Convert(response.body)));
       } else if (response.statusCode == 401) {
         if (await refreshUpdateAccessToken()) {
           return fetchHomeData(date: date, sort: sort);
@@ -156,7 +158,7 @@ class ApiClient {
           return null;
         }
       } else {
-        debugPrint('Error: ${response.body})');
+        debugPrint('Error: ${_uft8Convert(response.body)})');
         return null;
       }
     } catch (e) {
@@ -176,8 +178,9 @@ class ApiClient {
     var queryParams = {
       'date': DateFormat('yyyy-MM-dd').format(date),
     };
-    var uri =
-        Uri.parse('$baseUrl/statistics').replace(queryParameters: queryParams);
+    var uri = Uri.parse('$baseUrl/result/statistics')
+        .replace(queryParameters: queryParams);
+
     try {
       var response = await httpClient.get(
         uri,
@@ -188,7 +191,8 @@ class ApiClient {
       );
 
       if (response.statusCode == 200) {
-        return StatisticsData.fromJson(json.decode(response.body));
+        return StatisticsData.fromJson(
+            json.decode(_uft8Convert(response.body)));
       } else if (response.statusCode == 401) {
         if (await refreshUpdateAccessToken()) {
           return fetchStatistics(date);
@@ -197,7 +201,7 @@ class ApiClient {
           return null;
         }
       } else {
-        debugPrint('Error: ${response.body})');
+        debugPrint('Error: ${_uft8Convert(response.body)})');
         return null;
       }
     } catch (e) {
@@ -239,7 +243,7 @@ class ApiClient {
         }),
       );
 
-      final result = json.decode(response.body);
+      final result = json.decode(_uft8Convert(response.body));
       if (response.statusCode == 200) {
         return result['journalId'];
       } else if (response.statusCode == 401) {
@@ -255,7 +259,7 @@ class ApiClient {
           return null;
         }
       } else {
-        debugPrint('Error: ${response.body})');
+        debugPrint('Error: ${_uft8Convert(response.body)})');
         return null;
       }
     } catch (e) {
@@ -296,7 +300,7 @@ class ApiClient {
       );
 
       if (response.statusCode == 200) {
-        var responseData = json.decode(response.body);
+        var responseData = json.decode(_uft8Convert(response.body));
         return responseData['message'] != null;
       } else if (response.statusCode == 401) {
         if (await refreshUpdateAccessToken()) {
@@ -312,7 +316,7 @@ class ApiClient {
           return false;
         }
       } else {
-        debugPrint('Error: ${response.body})');
+        debugPrint('Error: ${_uft8Convert(response.body)})');
         return false;
       }
     } catch (e) {
@@ -340,7 +344,7 @@ class ApiClient {
       );
 
       if (response.statusCode == 200) {
-        var responseData = json.decode(response.body);
+        var responseData = json.decode(_uft8Convert(response.body));
         return responseData['message'] != null;
       } else if (response.statusCode == 401) {
         if (await refreshUpdateAccessToken()) {
@@ -350,7 +354,7 @@ class ApiClient {
           return false;
         }
       } else {
-        debugPrint('Error: ${response.body})');
+        debugPrint('Error: ${_uft8Convert(response.body)})');
         return false;
       }
     } catch (e) {
@@ -378,7 +382,8 @@ class ApiClient {
       );
 
       if (response.statusCode == 200) {
-        return JournalDetails.fromJson(json.decode(response.body));
+        return JournalDetails.fromJson(
+            json.decode(_uft8Convert(response.body)));
       } else if (response.statusCode == 401) {
         if (await refreshUpdateAccessToken()) {
           return fetchJournalDetails(journalId);
@@ -387,7 +392,7 @@ class ApiClient {
           return null;
         }
       } else {
-        debugPrint('Error: ${response.body})');
+        debugPrint('Error: ${_uft8Convert(response.body)})');
         return null;
       }
     } catch (e) {
@@ -416,7 +421,8 @@ class ApiClient {
       );
 
       if (response.statusCode == 200) {
-        return DailyJournalData.fromJson(json.decode(response.body));
+        return DailyJournalData.fromJson(
+            json.decode(_uft8Convert(response.body)));
       } else if (response.statusCode == 401) {
         if (await refreshUpdateAccessToken()) {
           return fetchDailyJournals(date);
@@ -426,7 +432,7 @@ class ApiClient {
           return null;
         }
       } else {
-        debugPrint('Error: ${response.body})');
+        debugPrint('Error: ${_uft8Convert(response.body)})');
         return null;
       }
     } catch (e) {
@@ -463,7 +469,7 @@ class ApiClient {
       );
 
       if (response.statusCode == 200) {
-        final result = json.decode(response.body);
+        final result = json.decode(_uft8Convert(response.body));
         return result['resultId'];
       } else if (response.statusCode == 401) {
         if (await refreshUpdateAccessToken()) {
@@ -473,7 +479,7 @@ class ApiClient {
           return null;
         }
       } else {
-        debugPrint('Error: ${response.body})');
+        debugPrint('Error: ${_uft8Convert(response.body)})');
         return null;
       }
     } catch (e) {
@@ -509,5 +515,9 @@ class ApiClient {
 
   void dispose() {
     httpClient.close();
+  }
+
+  String _uft8Convert(String value) {
+    return utf8.decode(value.codeUnits);
   }
 }

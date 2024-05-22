@@ -1,6 +1,7 @@
 import 'package:facemind/api/api_client.dart';
 import 'package:facemind/utils/double_extension.dart';
 import 'package:facemind/utils/global_colors.dart';
+import 'package:facemind/widgets/appbar.dart';
 import 'package:facemind/widgets/button_global.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -88,12 +89,12 @@ class _DiaryEditorViewState extends State<DiaryEditorView> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: GlobalColors.whiteColor,
+      appBar: DefaultAppBar(title: Text('일기 작성')),
       body: Container(
         padding: const EdgeInsets.only(
-            top: 65.0, right: 35.0, left: 35.0, bottom: 35.0),
+            top: 20.0, right: 35.0, left: 35.0, bottom: 35.0),
         child: Column(
           children: [
-            _headerView(),
             Expanded(
               child: _bodyView(),
             ),

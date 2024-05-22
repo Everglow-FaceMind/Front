@@ -14,38 +14,37 @@ class MyPageView extends StatefulWidget {
 class _MyPageViewState extends State<MyPageView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: GlobalColors.whiteColor,
-        body: SafeArea(
-            child: Container(
+    return Container(
+      color: GlobalColors.whiteColor,
+      child: SafeArea(
+        child: Scaffold(
+            backgroundColor: GlobalColors.whiteColor,
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              centerTitle: false,
+              leading: const SizedBox(),
+              leadingWidth: 10,
+              shape: Border(
+                bottom: BorderSide(
+                  color: Colors.grey[300]!,
+                  width: 0.5,
+                ),
+              ),
+              title: const Text('내 정보'),
+            ),
+            body: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.only(left: 5),
-                        child: const Text(
-                          'MY',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                      Divider(
-                        //구분선
-                        height: 10.0,
-                        color: Colors.grey[500],
-                        thickness: 0.8,
-                      ),
-                      const SizedBox(height: 10),
                       //사용자 이름
                       Container(
                         padding: const EdgeInsets.only(left: 12),
                         child: Text(
-                          '이름    ${UserStore.to.currentUser?.nickname ?? 'nickname'}', //왜 이름이랑 소개 안나오지
+                          '${UserStore.to.currentUser?.nickname ?? 'nickname'} 님',
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 22,
@@ -68,7 +67,6 @@ class _MyPageViewState extends State<MyPageView> {
                         ),
                       ),
                       const SizedBox(height: 25),
-
                       //사용자 이메일
                       Container(
                         padding: const EdgeInsets.only(left: 18),
@@ -163,6 +161,8 @@ class _MyPageViewState extends State<MyPageView> {
                         color: Colors.grey[400],
                         thickness: 1,
                       ),
-                    ]))));
+                    ]))),
+      ),
+    );
   }
 }

@@ -30,6 +30,7 @@ class JournalEntry {
   final int heartRateMax;
   final int heartRateAvg;
   final double stressRate;
+  final int? resultId;
   final JournalDetails? journalDetail;
 
   JournalEntry({
@@ -38,6 +39,7 @@ class JournalEntry {
     required this.heartRateMax,
     required this.heartRateAvg,
     required this.stressRate,
+    this.resultId,
     this.journalDetail,
   });
 
@@ -48,6 +50,7 @@ class JournalEntry {
       heartRateMax: json['heartRateMax'],
       heartRateAvg: json['heartRateAvg'],
       stressRate: json['stressRate'],
+      resultId: json['resultId'],
       journalDetail: json['journalDetail'] != null
           ? JournalDetails.fromJson(json['journalDetail'])
           : null,

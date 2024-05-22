@@ -1,4 +1,5 @@
 import 'package:facemind/api/api_client.dart';
+import 'package:facemind/model/user_condition.dart';
 import 'package:facemind/utils/global_colors.dart';
 import 'package:facemind/view/diary/diary_editor_view.dart';
 
@@ -78,6 +79,11 @@ class _DiaryViewState extends State<DiaryView> {
                                 '일지 내용 삭제에 실패했습니다.',
                               );
                             }
+                          } else {
+                            Get.snackbar(
+                              '일지 내용 없음',
+                              '일지 내용이 존재하지 않습니다.',
+                            );
                           }
                         },
                         onEdit: () {
@@ -90,8 +96,28 @@ class _DiaryViewState extends State<DiaryView> {
                               ),
                             )?.then((value) {
                               if (value == true) {
-                                Get.snackbar('일지 수정', '일지 내용이 수정되었습니다.');
-                                _fetchDiaryData(date);
+                                _fetchDiaryData(date).then((value) {
+                                  Get.snackbar('일지 수정', '일지 내용이 수정되었습니다.');
+                                });
+                              }
+                            });
+                          } else {
+                            // 일지가 없는 경우 새로 작성
+                            Get.to(() => DiaryEditorView.createWriteMode(
+                                  date: date,
+                                  userCondition: UserCondition(
+                                    date: date,
+                                    stressLevel: diary.stressRate,
+                                    avgHeartRate: diary.heartRateAvg,
+                                    maxHeartRate: diary.heartRateMax,
+                                    minHeartRate: diary.heartRateMin,
+                                  ),
+                                  resultId: diary.resultId ?? 0,
+                                ))?.then((value) {
+                              if (value == true) {
+                                _fetchDiaryData(date).then((value) {
+                                  Get.snackbar('일지 수정', '일지 내용이 수정되었습니다.');
+                                });
                               }
                             });
                           }
@@ -163,12 +189,12 @@ class _DiaryViewState extends State<DiaryView> {
 
   /// [date] : 가져올 일기 데이터의 날짜
   Future<void> _fetchDiaryData(DateTime date) async {
-    diaryList.clear();
+    setState(() {
+      diaryList.clear();
+    });
     final resultData = await ApiClient.to.fetchDailyJournals(date);
-    diaryList = resultData?.journals ?? [];
-
-    if (context.mounted) {
-      setState(() {});
-    }
+    setState(() {
+      diaryList = resultData?.journals ?? [];
+    });
   }
 }

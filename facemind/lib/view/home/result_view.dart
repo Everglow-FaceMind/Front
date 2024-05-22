@@ -7,6 +7,7 @@ import 'package:facemind/widgets/button_global.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/double_extension.dart';
+import '../../widgets/appbar.dart';
 
 class Assets {
   static String resultImg = 'assets/Images/resultImg.png';
@@ -43,12 +44,16 @@ class _ResultViewState extends State<ResultView> {
       child: SafeArea(
         child: Scaffold(
           backgroundColor: GlobalColors.whiteColor,
+          appBar: DefaultAppBar(
+            title: const Text(
+              '측정 결과',
+            ),
+          ),
           body: Container(
             padding:
                 const EdgeInsets.only(right: 35.0, left: 35.0, bottom: 35.0),
             child: Column(
               children: [
-                _header(),
                 const SizedBox(height: 30),
                 Expanded(
                   child: _bodyView(context, widget.userCondition),
