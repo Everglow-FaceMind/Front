@@ -1,8 +1,8 @@
 import 'package:facemind/api/api_client.dart';
 import 'package:facemind/utils/double_extension.dart';
 import 'package:facemind/utils/global_colors.dart';
-import 'package:facemind/widgets/appbar.dart';
-import 'package:facemind/widgets/button_global.dart';
+import 'package:facemind/ui/common/widgets/appbar.dart';
+import 'package:facemind/ui/common/widgets/button_global.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';

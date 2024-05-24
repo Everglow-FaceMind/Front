@@ -1,20 +1,20 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
-import 'package:facemind/view/home/result_view.dart';
-import 'package:facemind/widgets/appbar.dart';
+import 'package:facemind/ui/home/result_view.dart';
+import 'package:facemind/ui/common/widgets/appbar.dart';
+import 'package:facemind/utils/frame_utils.dart';
+import 'package:facemind/utils/image_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image/image.dart' as imglib;
 
-import '../../model/user_condition.dart';
-import '../../utils/global_colors.dart';
+import '../../../model/user_condition.dart';
+import '../../../utils/global_colors.dart';
 
-const int kStreamingSecond = 5;
-const int kStreamingFrameDelayMillisecond = 200;
+/// 촬영 시간, 60초로 수정
+const int kStreamingSecond = 10;
 
 class Assets {
   static String userIcon = 'assets/icon/icon_user.png';
@@ -22,22 +22,29 @@ class Assets {
   static String flipCameraIcon = 'assets/icon/flip_camera.png';
 }
 
-// https://developers.google.com/ml-kit/vision/face-detection?hl=ko
-
-class CameraView extends StatefulWidget {
-  const CameraView({
+class CameraStream extends StatefulWidget {
+  const CameraStream({
     super.key,
   });
   @override
-  State<StatefulWidget> createState() => _CameraViewState();
+  State<StatefulWidget> createState() => _CameraStreamState();
 }
 
-class _CameraViewState extends State<CameraView> {
-  // https://luvris2.tistory.com/764
-  // https://pub.dev/packages/camera
+class _CameraStreamState extends State<CameraStream> {
+  late final FrameUtil _frameUtil = FrameUtil(
+    // 프레임 버퍼 길이는 자유롭게 설정 해주세요.
+    // EX 현재는 150 프레임이 모여야 onFrameBufferFull 콜백이 호출됩니다.
+    // 프레임 버퍼 길이가 너무 길어지면 메모리를 많이 사용하여 문제가 될 수 있습니다.
+    frameBufferLenght: 150,
+    onFrameBufferFull: (value) {
+      // TODO: 버퍼가 가득 찼을때 처리
+      // 색성 정보 가져오는법
+      // for (final frame in value) {
+      //   final data = frame.buffer.asUint8List();
+      // }
+    },
+  );
 
-  // index: 0 => 후면
-  // index: 1 => 전면
   List<CameraDescription>? _cameras = [];
   CameraController? _controller;
   bool _isStremingImage = false;
@@ -55,10 +62,8 @@ class _CameraViewState extends State<CameraView> {
   int _cameraIndex = 0;
 
   Timer? _progressTimer;
-  Timer? _frameTimer;
 
-  Uint8List? _frameImage;
-  CameraImage? _bufferCameraImage;
+  Uint8List? _frameDisplayImage;
 
   @override
   void initState() {
@@ -71,12 +76,10 @@ class _CameraViewState extends State<CameraView> {
     // 카메라 컨트롤러 해제
     _controller?.dispose();
     _progressTimer?.cancel();
-    _frameTimer?.cancel();
     super.dispose();
   }
 
   void _initializeCamera() async {
-    // 사용 가능한 카메라 가져오기
     final cameras = await availableCameras();
 
     setState(() {
@@ -104,10 +107,10 @@ class _CameraViewState extends State<CameraView> {
         if (e is CameraException) {
           switch (e.code) {
             case 'CameraAccessDenied':
-              print("CameraController Error : CameraAccessDenied");
+              debugPrint("CameraController Error : CameraAccessDenied");
               break;
             default:
-              print("CameraController Error");
+              debugPrint("CameraController Error");
               break;
           }
         }
@@ -241,11 +244,11 @@ class _CameraViewState extends State<CameraView> {
                   ],
                 ),
               ),
-              if (_frameImage != null)
+              if (_frameDisplayImage != null)
                 Align(
                   alignment: Alignment.topRight,
                   child: Image.memory(
-                    _frameImage!,
+                    _frameDisplayImage!,
                     width: 40,
                     height: 80,
                     fit: BoxFit.cover,
@@ -281,7 +284,7 @@ class _CameraViewState extends State<CameraView> {
         if (!context.mounted) {
           return;
         }
-        _bufferCameraImage = image;
+        _processImage(image);
       });
     }
 
@@ -289,17 +292,13 @@ class _CameraViewState extends State<CameraView> {
     _progressTimer = Timer.periodic(oneSec, (Timer timer) {
       if (_progress >= kStreamingSecond) {
         _progressTimer?.cancel();
-        _frameTimer?.cancel();
-
         if (!kIsWeb) {
           _controller?.stopImageStream();
         }
-
         _progressTimer = null;
-        _frameTimer = null;
 
         _isStremingImage = false;
-        _frameImage = null;
+        _frameDisplayImage = null;
 
         Get.off(
           () => ResultView(
@@ -322,32 +321,10 @@ class _CameraViewState extends State<CameraView> {
         });
       }
     });
-
-    _frameTimer = Timer.periodic(
-        const Duration(milliseconds: kStreamingFrameDelayMillisecond), (timer) {
-      _streamImageToServer(_bufferCameraImage);
-    });
   }
 
-  Future<void> _streamImageToServer(CameraImage? cameraImage) async {
-    if (cameraImage != null) {
-      switch (cameraImage.format.group) {
-        case ImageFormatGroup.bgra8888:
-          _frameImage = await _convertBGRA8888ToImage(cameraImage);
-          break;
-        case ImageFormatGroup.yuv420:
-          _frameImage = await _convertYUV420toImage(cameraImage);
-          break;
-        case ImageFormatGroup.nv21:
-          _frameImage = await _convertNV21toImage(cameraImage);
-          break;
-        case ImageFormatGroup.jpeg:
-          _frameImage = await _processJPEGImage(cameraImage);
-          break;
-        case ImageFormatGroup.unknown:
-          break;
-      }
-    }
+  Future<void> _processImage(CameraImage? cameraImage) async {
+    // UI TEST Code
 
     _value = Random().nextInt(100);
 
@@ -362,112 +339,29 @@ class _CameraViewState extends State<CameraView> {
     if (context.mounted) {
       setState(() {});
     }
-  }
 
-  Future<Uint8List> _processJPEGImage(CameraImage image) async {
-    return Uint8List.fromList(image.planes.first.bytes);
-  }
-
-  Future<Uint8List> _convertYUV420toImage(CameraImage cameraImage) async {
-    final int width = cameraImage.width;
-    final int height = cameraImage.height;
-    final int uvRowStride = cameraImage.planes[1].bytesPerRow;
-    final int uvPixelStride = cameraImage.planes[1].bytesPerPixel!;
-
-    var img = imglib.Image(
-      width: width,
-      height: height,
-    );
-
-    for (int y = 0; y < height; y++) {
-      for (int x = 0; x < width; x++) {
-        final int uvIndex =
-            uvPixelStride * (x / 2).floor() + uvRowStride * (y / 2).floor();
-        final int index = y * width + x;
-        final yp = cameraImage.planes[0].bytes[index];
-        final up = cameraImage.planes[1].bytes[uvIndex];
-        final vp = cameraImage.planes[2].bytes[uvIndex];
-
-        var r = yp + vp * 1436 / 1024 - 179;
-        var g = yp - up * 46549 / 131072 + 44 - vp * 93604 / 131072 + 91;
-        var b = yp + up * 1814 / 1024 - 227;
-
-        final red = r.clamp(0, 255).toInt();
-        final green = g.clamp(0, 255).toInt();
-        final blue = b.clamp(0, 255).toInt();
-        img.data?.setPixelRgbSafe(x, y, red, green, blue);
+    if (cameraImage != null) {
+      final frame = ImageUtils.convertCameraImage(cameraImage);
+      if (frame != null) {
+        _frameUtil.addFrame(frame);
       }
+      setState(() {
+        _frameDisplayImage = ImageUtils.convertImageToPng(frame);
+      });
     }
-    imglib.PngEncoder pngEncoder = imglib.PngEncoder(level: 0);
-    final png = pngEncoder.encode(img);
-    return png;
-  }
-
-  Future<Uint8List> _convertBGRA8888ToImage(CameraImage cameraImage) async {
-    final img = imglib.Image.fromBytes(
-      width: cameraImage.planes[0].width!,
-      height: cameraImage.planes[0].height!,
-      bytes: cameraImage.planes[0].bytes.buffer,
-      order: imglib.ChannelOrder.bgra,
-    );
-    imglib.PngEncoder pngEncoder = imglib.PngEncoder(level: 0);
-    final png = pngEncoder.encode(img);
-    return png;
-  }
-
-  Future<Uint8List> _convertNV21toImage(CameraImage image) async {
-    final int width = image.width;
-    final int height = image.height;
-    // YUV -> RGB 변환을 위한 빈 imglib 이미지 생성
-    var img = imglib.Image(
-      width: width,
-      height: height,
-    );
-    final int uvWidth = width ~/ 2;
-    final int uvHeight = height ~/ 2;
-
-    final yPlane = image.planes[0];
-    final uvPlane = image.planes[1];
-    final yBuffer = yPlane.bytes;
-    final uvBuffer = uvPlane.bytes;
-    final uvRowStride = uvPlane.bytesPerRow;
-    final uvPixelStride = uvPlane.bytesPerPixel!;
-
-    for (int y = 0; y < height; y++) {
-      for (int x = 0; x < width; x++) {
-        final uvIndex = uvPixelStride * (x ~/ 2) + uvRowStride * (y ~/ 2);
-        final yIndex = y * yPlane.bytesPerRow + x;
-
-        final Y = yBuffer[yIndex];
-        final V = uvBuffer[uvIndex + 0];
-        final U = uvBuffer[uvIndex + 1];
-
-        var r = Y + 1.402 * (V - 128);
-        var g = Y - 0.344136 * (U - 128) - 0.714136 * (V - 128);
-        var b = Y + 1.772 * (U - 128);
-
-        final red = r.clamp(0, 255).toInt();
-        final green = g.clamp(0, 255).toInt();
-        final blue = b.clamp(0, 255).toInt();
-
-        img.data?.setPixelRgbSafe(x, y, red, green, blue);
-      }
-    }
-
-    imglib.PngEncoder pngEncoder = imglib.PngEncoder(level: 0);
-    final png = pngEncoder.encode(img);
-    return png;
   }
 
   double _calculateStressIndex(
       int minHeartRate, int maxHeartRate, int avgHeartRate) {
     double stressContributionFromMax = maxHeartRate * 0.1;
     double stressContributionFromAvg = avgHeartRate * 0.05;
+
     double rawStressIndex =
         stressContributionFromMax + stressContributionFromAvg;
     double normalizedStressIndex = (rawStressIndex / 1000) * 40;
     double stressIndexWithMin = normalizedStressIndex + 15;
     double finalStressIndex = stressIndexWithMin > 40 ? 40 : stressIndexWithMin;
+
     return double.parse(finalStressIndex.toStringAsFixed(2));
   }
 }

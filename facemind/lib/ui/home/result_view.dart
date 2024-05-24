@@ -1,13 +1,13 @@
 import 'package:facemind/api/api_client.dart';
 import 'package:facemind/model/user_condition.dart';
 import 'package:facemind/utils/global_colors.dart';
-import 'package:facemind/view/diary/diary_editor_view.dart';
-import 'package:facemind/view/home/home_view.dart';
-import 'package:facemind/widgets/button_global.dart';
+import 'package:facemind/ui/diary/diary_editor_view.dart';
+import 'package:facemind/ui/home/home_view.dart';
+import 'package:facemind/ui/common/widgets/button_global.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utils/double_extension.dart';
-import '../../widgets/appbar.dart';
+import '../common/widgets/appbar.dart';
 
 class Assets {
   static String resultImg = 'assets/Images/resultImg.png';

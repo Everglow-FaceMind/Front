@@ -1,6 +1,6 @@
 import 'package:facemind/utils/global_colors.dart';
 import 'package:facemind/utils/user_store.dart';
-import 'package:facemind/view/login/login_view.dart';
+import 'package:facemind/ui/login/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

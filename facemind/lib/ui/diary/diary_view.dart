@@ -1,15 +1,15 @@
 import 'package:facemind/api/api_client.dart';
 import 'package:facemind/model/user_condition.dart';
 import 'package:facemind/utils/global_colors.dart';
-import 'package:facemind/view/diary/diary_editor_view.dart';
+import 'package:facemind/ui/diary/diary_editor_view.dart';
 
-import 'package:facemind/widgets/diary_list_item.dart';
+import 'package:facemind/ui/common/widgets/diary_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../api/model/daily_journal_data.dart';
-import '../../widgets/appbar.dart';
+import '../common/widgets/appbar.dart';
 
 class DiaryView extends StatefulWidget {
   final DateTime date;

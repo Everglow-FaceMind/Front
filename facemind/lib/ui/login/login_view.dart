@@ -2,13 +2,13 @@ import 'package:facemind/api/api_client.dart';
 import 'package:facemind/utils/global_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:facemind/view/signup/signup_view.dart';
-import 'package:facemind/widgets/button_global.dart';
+import 'package:facemind/ui/signup/signup_view.dart';
+import 'package:facemind/ui/common/widgets/button_global.dart';
 
 import '../../utils/string_extension.dart';
 import '../../utils/user_store.dart';
 import '../home/home_view.dart';
-import '../../widgets/login_text_form.dart';
+import '../common/widgets/login_text_form.dart';
 
 class Assets {
   static String logo2 = 'assets/Images/logo2.png';

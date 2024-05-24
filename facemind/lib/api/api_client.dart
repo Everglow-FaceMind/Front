@@ -1,7 +1,7 @@
 import 'package:facemind/api/model/user_info.dart';
 import 'package:facemind/model/user_condition.dart';
 import 'package:facemind/utils/user_store.dart';
-import 'package:facemind/view/login/login_view.dart';
+import 'package:facemind/ui/login/login_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;

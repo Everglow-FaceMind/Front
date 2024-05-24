@@ -4,14 +4,14 @@ import 'package:facemind/model/user.dart';
 import 'package:facemind/utils/global_colors.dart';
 import 'package:facemind/utils/string_extension.dart';
 import 'package:facemind/utils/user_store.dart';
-import 'package:facemind/widgets/agreement.dart';
-import 'package:facemind/widgets/circles_in_signup.dart';
+import 'package:facemind/ui/common/widgets/agreement.dart';
+import 'package:facemind/ui/common/widgets/circles_in_signup.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../home/home_view.dart';
-import '../../widgets/button_global.dart';
-import '../../widgets/login_text_form.dart';
+import '../common/widgets/button_global.dart';
+import '../common/widgets/login_text_form.dart';
 
 class SignupView extends StatefulWidget {
   const SignupView({super.key});

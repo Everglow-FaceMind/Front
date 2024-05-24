@@ -2,7 +2,7 @@
 import 'package:camera/camera.dart';
 import 'package:facemind/api/api_client.dart';
 import 'package:facemind/utils/user_store.dart';
-import 'package:facemind/view/splash_view.dart';
+import 'package:facemind/ui/splash_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

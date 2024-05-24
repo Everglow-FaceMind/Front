@@ -1,8 +1,8 @@
 import 'package:facemind/api/model/home_calendar_response.dart';
 import 'package:facemind/model/user_condition.dart';
 import 'package:facemind/utils/user_store.dart';
-import 'package:facemind/view/diary/diary_view.dart';
-import 'package:facemind/view/home/result_view.dart';
+import 'package:facemind/ui/diary/diary_view.dart';
+import 'package:facemind/ui/home/result_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -11,9 +11,9 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../api/api_client.dart';
 import '../../api/model/enum.dart';
 import '../../utils/global_colors.dart';
-import '../../widgets/button_global.dart';
-import '../../widgets/dropdown.dart';
-import 'camera_view.dart';
+import '../common/widgets/button_global.dart';
+import '../common/widgets/dropdown.dart';
+import '../camera/view/camera_stream.dart';
 
 class CalendarView extends StatefulWidget {
   final String name;
@@ -54,7 +54,7 @@ class _CalendarViewState extends State<CalendarView> {
         ButtonGlobal(
           text: '심박수 측정하기',
           onPressed: () {
-            Get.to(() => const CameraView());
+            Get.to(() => const CameraStream());
           },
           buttonColor: GlobalColors.mainColor,
         ),

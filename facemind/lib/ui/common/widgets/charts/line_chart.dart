@@ -2,7 +2,7 @@ import 'package:facemind/utils/global_colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import '../../api/model/statistics_data.dart';
+import '../../../../api/model/statistics_data.dart';
 
 // LineChart를 구현하는 위젯입니다.
 class _LineChart extends StatelessWidget {

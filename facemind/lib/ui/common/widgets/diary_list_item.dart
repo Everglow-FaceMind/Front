@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:facemind/utils/double_extension.dart';
 import 'package:flutter/material.dart';
 
-import '../api/model/daily_journal_data.dart';
-import '../utils/global_colors.dart';
+import '../../../api/model/daily_journal_data.dart';
+import '../../../utils/global_colors.dart';
 
 class DiaryListItem extends StatefulWidget {
   final JournalEntry data;

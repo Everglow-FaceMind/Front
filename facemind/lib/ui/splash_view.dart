@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:facemind/utils/user_store.dart';
-import 'package:facemind/view/home/home_view.dart';
+import 'package:facemind/ui/home/home_view.dart';
 import 'package:get/get.dart';
-import 'package:facemind/view/login/login_view.dart';
+import 'package:facemind/ui/login/login_view.dart';
 import 'package:facemind/utils/global_colors.dart';
 
 class AnimatedTextAppear extends StatefulWidget {

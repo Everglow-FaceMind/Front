@@ -2,7 +2,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:facemind/api/model/enum.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/global_colors.dart';
+import '../../../utils/global_colors.dart';
 
 class SortDropdown extends StatefulWidget {
   final void Function(SortType) onChanged;

@@ -1,8 +1,8 @@
 import 'package:facemind/api/api_client.dart';
 import 'package:facemind/utils/global_colors.dart';
-import 'package:facemind/widgets/appbar.dart';
-import 'package:facemind/widgets/charts/line_chart.dart';
-import 'package:facemind/widgets/charts/pie_chart.dart';
+import 'package:facemind/ui/common/widgets/appbar.dart';
+import 'package:facemind/ui/common/widgets/charts/line_chart.dart';
+import 'package:facemind/ui/common/widgets/charts/pie_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

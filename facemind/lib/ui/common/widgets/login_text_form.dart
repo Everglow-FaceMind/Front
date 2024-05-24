@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utils/global_colors.dart';
+import '../../../utils/global_colors.dart';
 
 class LoginTextFrom extends StatefulWidget {
   final TextEditingController controller;

@@ -1,5 +1,5 @@
 import 'package:facemind/utils/global_colors.dart';
-import 'package:facemind/widgets/button_global.dart';
+import 'package:facemind/ui/common/widgets/button_global.dart';
 import 'package:flutter/material.dart';
 
 class Agreement extends StatefulWidget {
