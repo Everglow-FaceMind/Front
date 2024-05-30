@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
+import 'utils/socket/socket_io.dart';
+import 'utils/socket/socket_io_repository.dart';
+
 List<CameraDescription> cameras = [];
 
 Future<void> main() async {
@@ -21,6 +24,9 @@ Future<void> main() async {
   ///API 요청 Client를 전역으로 접근
   final ApiClient apiClient = ApiClient();
   Get.lazyPut(() => apiClient, fenix: true);
+
+  final SocketClient socketClient = SocketIoClient();
+  Get.lazyPut<SocketClient>(() => socketClient, fenix: true);
 
   // 카메라
   WidgetsFlutterBinding.ensureInitialized();

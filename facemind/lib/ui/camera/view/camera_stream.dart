@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:math';
-
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:camera/camera.dart';
 import 'package:facemind/ui/home/result_view.dart';
 import 'package:facemind/ui/common/widgets/appbar.dart';
@@ -9,12 +9,17 @@ import 'package:facemind/utils/image_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image/image.dart' as imglib;
 
 import '../../../model/user_condition.dart';
 import '../../../utils/global_colors.dart';
+import '../../../utils/socket/socket_io_repository.dart';
 
 /// 촬영 시간, 60초로 수정
 const int kStreamingSecond = 10;
+
+/// 웹에서 프레임 딜레이
+const int kWebFrameDelay = 10;
 
 class Assets {
   static String userIcon = 'assets/icon/icon_user.png';
@@ -32,16 +37,10 @@ class CameraStream extends StatefulWidget {
 
 class _CameraStreamState extends State<CameraStream> {
   late final FrameUtil _frameUtil = FrameUtil(
-    // 프레임 버퍼 길이는 자유롭게 설정 해주세요.
-    // EX 현재는 150 프레임이 모여야 onFrameBufferFull 콜백이 호출됩니다.
-    // 프레임 버퍼 길이가 너무 길어지면 메모리를 많이 사용하여 문제가 될 수 있습니다.
-    frameBufferLenght: 150,
+    frameBufferLength: 1000,
     onFrameBufferFull: (value) {
-      // TODO: 버퍼가 가득 찼을때 처리
-      // 색성 정보 가져오는법
-      // for (final frame in value) {
-      //   final data = frame.buffer.asUint8List();
-      // }
+      final list = value.map((e) => e.buffer.asUint8List()).toList();
+      SocketClient.to.send('image', list);
     },
   );
 
@@ -62,6 +61,7 @@ class _CameraStreamState extends State<CameraStream> {
   int _cameraIndex = 0;
 
   Timer? _progressTimer;
+  Timer? _webFrameTimer;
 
   Uint8List? _frameDisplayImage;
 
@@ -76,6 +76,7 @@ class _CameraStreamState extends State<CameraStream> {
     // 카메라 컨트롤러 해제
     _controller?.dispose();
     _progressTimer?.cancel();
+    _webFrameTimer?.cancel();
     super.dispose();
   }
 
@@ -93,7 +94,7 @@ class _CameraStreamState extends State<CameraStream> {
 
       _controller = CameraController(
         targetCamera,
-        ResolutionPreset.medium,
+        ResolutionPreset.low,
         enableAudio: false,
       );
 
@@ -286,6 +287,15 @@ class _CameraStreamState extends State<CameraStream> {
         }
         _processImage(image);
       });
+    } else {
+      _webFrameTimer = Timer.periodic(
+          const Duration(milliseconds: kWebFrameDelay), (timer) async {
+        if (!context.mounted) {
+          return;
+        }
+        final file = await _controller?.takePicture();
+        _processImageForWeb(file);
+      });
     }
 
     const oneSec = Duration(seconds: 1);
@@ -323,9 +333,32 @@ class _CameraStreamState extends State<CameraStream> {
     });
   }
 
+  Future<void> _processImageForWeb(XFile? file) async {
+    if (file == null) {
+      return;
+    }
+    final bytes = await file.readAsBytes();
+    debugPrint('image bytes length: ${bytes.length}');
+    debugPrint(DateTime.now().toString());
+
+    final frame = imglib.decodeImage(bytes);
+    if (frame != null) {
+      // Compress the frame
+      final compressedFrame = await FlutterImageCompress.compressWithList(
+        frame.getBytes(),
+        quality: 50,
+      );
+      _frameUtil
+          .addFrame(imglib.decodeImage(Uint8List.fromList(compressedFrame))!);
+      setState(() {
+        _frameDisplayImage = ImageUtils.convertImageToJpeg(
+            imglib.decodeImage(Uint8List.fromList(compressedFrame))!);
+      });
+    }
+  }
+
   Future<void> _processImage(CameraImage? cameraImage) async {
     // UI TEST Code
-
     _value = Random().nextInt(100);
 
     if (_minHeartRate == 0 || _minHeartRate > _value) {
@@ -343,11 +376,18 @@ class _CameraStreamState extends State<CameraStream> {
     if (cameraImage != null) {
       final frame = ImageUtils.convertCameraImage(cameraImage);
       if (frame != null) {
-        _frameUtil.addFrame(frame);
+        // Compress the frame
+        final compressedFrame = await FlutterImageCompress.compressWithList(
+          frame.getBytes(),
+          quality: 50,
+        );
+        _frameUtil
+            .addFrame(imglib.decodeImage(Uint8List.fromList(compressedFrame))!);
+        setState(() {
+          _frameDisplayImage = ImageUtils.convertImageToJpeg(
+              imglib.decodeImage(Uint8List.fromList(compressedFrame))!);
+        });
       }
-      setState(() {
-        _frameDisplayImage = ImageUtils.convertImageToPng(frame);
-      });
     }
   }
 

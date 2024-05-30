@@ -19,10 +19,10 @@ class ImageUtils {
     }
   }
 
-  static Uint8List? convertImageToPng(imglib.Image? image) {
+  static Uint8List? convertImageToJpeg(imglib.Image? image) {
     if (image == null) return null;
-    imglib.PngEncoder pngEncoder = imglib.PngEncoder(level: 0);
-    final png = pngEncoder.encode(image);
+    imglib.JpegEncoder jpegEncoder = imglib.JpegEncoder();
+    final png = jpegEncoder.encode(image);
     return Uint8List.fromList(png);
   }
 

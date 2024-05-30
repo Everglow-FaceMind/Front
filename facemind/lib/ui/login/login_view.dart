@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:facemind/ui/signup/signup_view.dart';
 import 'package:facemind/ui/common/widgets/button_global.dart';
-
 import '../../utils/string_extension.dart';
 import '../../utils/user_store.dart';
 import '../home/home_view.dart';
@@ -23,6 +22,11 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -152,21 +156,4 @@ class _LoginViewState extends State<LoginView> {
   bool get _isInputValid =>
       _emailController.text.emailValidat == null &&
       _passwordController.text.passwordValidat == null;
-}
-
-class ExampleView extends StatefulWidget {
-  final String text;
-  const ExampleView({
-    super.key,
-    required this.text,
-  });
-  @override
-  State<StatefulWidget> createState() => _ExampleViewState();
-}
-
-class _ExampleViewState extends State<ExampleView> {
-  @override
-  Widget build(BuildContext context) {
-    return Text(widget.text);
-  }
 }

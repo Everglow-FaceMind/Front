@@ -1,7 +1,7 @@
-import 'package:facemind/api/api_client.dart';
 import 'package:facemind/ui/home/analyze_view.dart';
 import 'package:facemind/ui/home/calendar_view.dart';
 import 'package:facemind/ui/home/my_page_view.dart';
+import 'package:facemind/utils/socket/socket_io_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:facemind/utils/global_colors.dart';
 
@@ -19,6 +19,9 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
+    SocketClient.to.connect(Uri.parse('http://127.0.0.1:5000')).then((value) {
+      debugPrint('socket connected: $value');
+    });
   }
 
   @override
